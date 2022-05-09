@@ -1,0 +1,2 @@
+rootProject.name = "CardGameProject"
+include ':app'
