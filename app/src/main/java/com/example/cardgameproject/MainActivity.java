@@ -3,6 +3,7 @@ package com.example.cardgameproject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,6 +13,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.util.concurrent.TimeUnit;
@@ -31,17 +33,20 @@ public class MainActivity extends AppCompatActivity {
 
         database = sqliteHelper.getWritableDatabase();
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle("Nombre jugador");
-        alert.setMessage("Por favor introduzca su nombre");
+        AlertDialog.Builder alertLogIn = new AlertDialog.Builder(this);
+        alertLogIn.setTitle("Log in");
         // Set an EditText view to get user input
+        LinearLayout layout = new LinearLayout(this);
         final EditText user = new EditText(this);
         final EditText password = new EditText(this);
-        final Button createAccount = new Button( this);
         password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        alert.setView(user);
-        alert.setView(password);
-        alert.setPositiveButton("Ok", (dialog, whichButton) -> {
+        layout.setOrientation(LinearLayout.VERTICAL);
+        user.setPadding(20, 20, 20, 20);
+        password.setPadding(20, 20, 20, 20);
+        layout.addView(user);
+        layout.addView(password);
+        alertLogIn.setView(layout);
+        alertLogIn.setPositiveButton("Ok", (dialog, whichButton) -> {
             boolean userEmpty = isEmpty(user,getString(R.string.userEmpty));
             boolean passwordEmpty = isEmpty(password, getString(R.string.passwordEmpty));
 
@@ -52,6 +57,39 @@ public class MainActivity extends AppCompatActivity {
             compareUserPassword(user.getText().toString(), password.getText().toString());
 
             //TODO - COMPROBAR EN BASE DE DATOS QUE EL USUARIO Y EL PASSWORD SON CORRECTOS Y PASAR A LA SIGUIENTE ACTIVITY
+        });
+        alertLogIn.show();
+
+        alertLogIn.setPositiveButton("Create Account", (dialog, whichButton) -> {
+
+            AlertDialog.Builder alertCreateAccount = new AlertDialog.Builder(this);
+            alertCreateAccount.setTitle("Create Account");
+            // Set an EditText view to get user input
+            final EditText userCreate = new EditText(this);
+            final EditText passwordCreate = new EditText(this);
+            final EditText passwordValidation = new EditText(this);
+
+            passwordCreate.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            passwordValidation.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+            alertCreateAccount.setView(userCreate);
+            alertCreateAccount.setView(passwordCreate);
+            alertCreateAccount.setView(passwordValidation);
+            alertCreateAccount.setPositiveButton("Ok", (dialogCreate, whichButtonCreate) -> {
+                boolean userEmpty = isEmpty(userCreate,getString(R.string.userEmpty));
+                boolean passwordEmpty = isEmpty(passwordCreate, getString(R.string.passwordEmpty));
+                boolean passwordValidationEmpty = isEmpty(passwordValidation, getString(R.string.passwordEmpty));
+
+                if(!userEmpty || !passwordEmpty || !passwordValidationEmpty){
+                    if (passwordCreate.getText().toString().equals(passwordValidation.getText().toString())) {
+                        createAccount(user.getText().toString(), password.getText().toString());
+                    }else {
+                        passwordValidation.setError("Password doesn't match, try again");
+                    }
+                }
+                //TODO - PASAR A LA SIGUIENTE ACTIVITY
+            });
+            alertCreateAccount.show();
         });
     }
 
@@ -74,6 +112,27 @@ public class MainActivity extends AppCompatActivity {
         }else{
             //TODO - El usuario no existe no esta hecho
             Toast.makeText(this, "No existe", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    private void createAccount(String user, String password) {
+
+        String[] columns = new String[]{DatabaseContract.UsersTable.COLUMN_NAME, DatabaseContract.UsersTable.COLUMN_PASSWORD};
+        String[] selectionArgs = new String[]{user};
+
+        Cursor c = database.query(DatabaseContract.UsersTable.TABLE, columns, DatabaseContract.UsersTable.COLUMN_NAME + "=?", selectionArgs, null, null,
+                null);
+
+        if(!c.moveToFirst()){
+            ContentValues values = new ContentValues();
+            values.put(DatabaseContract.UsersTable.COLUMN_NAME, user);
+            values.put(DatabaseContract.UsersTable.COLUMN_PASSWORD, password);
+
+            database.insert(DatabaseContract.UsersTable.TABLE, null, values);
+        }else{
+            //TODO - El usuario no existe no esta hecho
+            Toast.makeText(this, "User already exists, change the username", Toast.LENGTH_SHORT).show();
         }
 
     }
