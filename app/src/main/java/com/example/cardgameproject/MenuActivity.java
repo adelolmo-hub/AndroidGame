@@ -3,6 +3,7 @@ package com.example.cardgameproject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -52,6 +53,11 @@ public class MenuActivity extends AppCompatActivity {
         signOutAlert.setView(signOutButton);
 
         signOutAlert.show();
+    }
+
+    public void onClickSettings(View view){
+        Intent settings = new Intent(this, SettingsActivity.class);
+        startActivity(settings);
     }
 
 }
