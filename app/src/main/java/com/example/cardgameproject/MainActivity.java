@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -18,12 +19,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     EditText etMail, etPassword;
 
+    private String mail;
+    private String password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser fbUser = firebaseAuth.getCurrentUser();
+
+        if(fbUser!= null){
+            goToMenu();
+        }
 
     }
 
@@ -100,12 +109,15 @@ public class MainActivity extends AppCompatActivity {
         boolean userEmpty = isEmpty(etMail,getString(R.string.userEmpty));
         boolean passwordEmpty = isEmpty(etPassword, getString(R.string.passwordEmpty));
 
+        mail = etMail.getText().toString();
+        password = etPassword.getText().toString();
+
         if(!userEmpty && !passwordEmpty){
-            firebaseAuth.signInWithEmailAndPassword(etMail.getText().toString(), etPassword.getText().toString()).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if(task.isSuccessful()){
-
+                        goToMenu();
                     }else{
                         String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
                         dameToastdeerror(errorCode);
@@ -113,6 +125,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void goToMenu() {
+        Intent i = new Intent(MainActivity.this, MenuActivity.class);
+        startActivity(i);
     }
 
     private boolean isEmpty(EditText editText, String errorMsg) {
