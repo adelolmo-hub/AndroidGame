@@ -31,6 +31,11 @@ public class MenuActivity extends AppCompatActivity {
         finish();
     }
 
+    public void collectionActivity(View view){
+        Intent i = new Intent(this, CollectionActivity.class);
+        startActivity(i);
+    }
+
     @Override
     public void onBackPressed(){
         alertDialogSignOut();
