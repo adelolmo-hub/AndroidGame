@@ -3,6 +3,7 @@ package com.example.cardgameproject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -28,6 +29,11 @@ public class MenuActivity extends AppCompatActivity {
     public void signOut(View view){
         FirebaseAuth.getInstance().signOut();
         finish();
+    }
+
+    public void collectionActivity(View view){
+        Intent i = new Intent(this, CollectionActivity.class);
+        startActivity(i);
     }
 
     @Override
