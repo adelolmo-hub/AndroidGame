@@ -1,6 +1,7 @@
 package com.example.cardgameproject;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,14 +9,21 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.ArrayList;
+
 public class GridAdapter extends BaseAdapter {
     Context context;
-    String[] champs;
-    int[] image;
+    ArrayList<String> champs;
+    ArrayList<Bitmap> image;
 
     LayoutInflater inflater;
 
-    public GridAdapter(Context context, String[] champs, int[] image) {
+
+
+    public GridAdapter(Context context,  ArrayList<String> champs,  ArrayList<Bitmap> image) {
         this.context = context;
         this.champs = champs;
         this.image = image;
@@ -24,7 +32,7 @@ public class GridAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return champs.length;
+        return champs.size();
     }
 
     @Override
@@ -49,8 +57,8 @@ public class GridAdapter extends BaseAdapter {
         ImageView imageView = view.findViewById(R.id.grid_image);
         TextView textView = view.findViewById(R.id.item_name);
 
-        imageView.setImageResource(image[i]);
-        textView.setText(champs[i]);
+        imageView.setImageBitmap(image.get(i));
+        textView.setText(champs.get(i));
         return view;
     }
 }
