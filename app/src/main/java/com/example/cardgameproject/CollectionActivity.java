@@ -2,11 +2,16 @@ package com.example.cardgameproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
 import com.google.android.gms.auth.api.signin.internal.Storage;
@@ -25,9 +30,14 @@ public class CollectionActivity extends AppCompatActivity {
     private final String STORAGE_NAME = "CardImages";
     ActivityCollectionBinding binding;
     StorageReference storageReference;
+    private SharedPreferences spShonenCard;
+    public static MediaPlayer musicShonenCard = new MediaPlayer();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        musicMainThemeColl();
+
         binding = ActivityCollectionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -57,5 +67,27 @@ public class CollectionActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void musicMainThemeColl(){
+        Bundle bundle = getIntent().getExtras();
+        spShonenCard = getSharedPreferences("shonenCardPreference", Context.MODE_PRIVATE);
+        if(spShonenCard.getBoolean("music", true)) {
+            musicShonenCard = MediaPlayer.create(this, R.raw.main_theme);
+            if (bundle.getInt("mediaPlayerTimePos") > 0) {
+                musicShonenCard.seekTo(bundle.getInt("mediaPlayerTimePos"));
+            }
+            musicShonenCard.start();
+            musicShonenCard.setLooping(true);
+        }
+    }
+
+    public void onClickBackColl(View view){
+        Intent back = getIntent();
+        setResult(RESULT_OK, back);
+        back.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
+        musicShonenCard.stop();
+        musicShonenCard.reset();
+        finish();
     }
 }
