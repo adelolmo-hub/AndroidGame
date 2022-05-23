@@ -133,6 +133,27 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    public void showAlertInfo(View view){
+
+        AlertDialog.Builder createInfoBuilder = new AlertDialog.Builder(this);
+        //Set a Layout
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Set an EditText view to get user input
+        final TextView testInfo = new TextView(this);
+        createInfoBuilder.setTitle("Application Information");
+        testInfo.setText("Application developed by Albert del Olmo and Albert Garrigós");
+        layout.addView(testInfo);
+
+        createInfoBuilder.setView(layout);
+
+        final AlertDialog dialogInfo = createInfoBuilder.create();
+
+        dialogInfo.show();
+
+    }
+
     private boolean isEmpty(EditText editText, String errorMsg) {
         boolean empty = TextUtils.isEmpty(editText.getText());
         if (empty) {
