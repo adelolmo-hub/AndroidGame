@@ -1,10 +1,13 @@
 package com.example.cardgameproject;
 
+import static com.example.cardgameproject.MenuActivity.musicShonenCard;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 
 import android.os.Bundle;
@@ -17,7 +20,7 @@ public class CollectionActivity extends AppCompatActivity {
 
 
     ActivityCollectionBinding binding;
-
+    private SharedPreferences spShonenCard;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
