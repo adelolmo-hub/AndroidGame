@@ -2,23 +2,16 @@ package com.example.cardgameproject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.content.Context;
+import android.content.Intent;
+
+import android.media.MediaPlayer;
+
 import android.os.Bundle;
-import android.util.Log;
+
+import android.view.View;
 
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
-import com.google.android.gms.auth.api.signin.internal.Storage;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
-import com.google.firebase.storage.StorageReference;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class CollectionActivity extends AppCompatActivity {
 
@@ -28,6 +21,9 @@ public class CollectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        musicMainThemeColl();
+
         binding = ActivityCollectionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -35,5 +31,27 @@ public class CollectionActivity extends AppCompatActivity {
         GridAdapter gridAdapter = new GridAdapter(this, MenuActivity.cards);
         binding.gridView.setAdapter(gridAdapter);
 
+    }
+
+    public void musicMainThemeColl(){
+        Bundle bundle = getIntent().getExtras();
+        spShonenCard = getSharedPreferences("shonenCardPreference", Context.MODE_PRIVATE);
+        if(spShonenCard.getBoolean("music", true)) {
+            musicShonenCard = MediaPlayer.create(this, R.raw.main_theme);
+            if (bundle.getInt("mediaPlayerTimePos") > 0) {
+                musicShonenCard.seekTo(bundle.getInt("mediaPlayerTimePos"));
+            }
+            musicShonenCard.start();
+            musicShonenCard.setLooping(true);
+        }
+    }
+
+    public void onClickBackColl(View view){
+        Intent back = getIntent();
+        setResult(RESULT_OK, back);
+        back.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
+        musicShonenCard.stop();
+        musicShonenCard.reset();
+        finish();
     }
 }

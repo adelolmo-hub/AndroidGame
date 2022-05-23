@@ -1,4 +1,4 @@
-package com.example.cardgameproject;
+  package com.example.cardgameproject;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -130,6 +130,27 @@ public class SettingsActivity extends AppCompatActivity {
             });
         });
         dialogCreateAccount.show();
+
+    }
+
+    public void showAlertInfo(View view){
+
+        AlertDialog.Builder createInfoBuilder = new AlertDialog.Builder(this);
+        //Set a Layout
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
+        // Set an EditText view to get user input
+        final TextView testInfo = new TextView(this);
+        createInfoBuilder.setTitle("Application Information");
+        testInfo.setText("Application developed by Albert del Olmo and Albert Garrigós");
+        layout.addView(testInfo);
+
+        createInfoBuilder.setView(layout);
+
+        final AlertDialog dialogInfo = createInfoBuilder.create();
+
+        dialogInfo.show();
 
     }
 

@@ -31,6 +31,7 @@ public class MenuActivity extends AppCompatActivity {
     private SharedPreferences spShonenCard;
     public static MediaPlayer musicShonenCard = new MediaPlayer();
     private final static int ID1 = 0;
+    private final static int ID2 = 1;
     private int musicPosition;
     private static int RESULT_OK = -1;
     private static int RESULT_CANCELED = 0;
@@ -71,7 +72,9 @@ public class MenuActivity extends AppCompatActivity {
 
     public void collectionActivity(View view){
         Intent i = new Intent(this, CollectionActivity.class);
-        startActivityForResult(i, ID1);
+        i.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
+        musicShonenCard.pause();
+        startActivityForResult(i, ID2);
     }
 
     @Override
@@ -126,7 +129,8 @@ public class MenuActivity extends AppCompatActivity {
     {
         super.onActivityResult(requestCode, resultCode, data);
         switch(requestCode) {
-            case (ID1) : {
+            case (ID1) :
+            case (ID2) : {
                 if (resultCode == RESULT_OK) {
                     musicPosition = data.getExtras().getInt("mediaPlayerTimePos");
                     spShonenCard = getSharedPreferences("shonenCardPreference", Context.MODE_PRIVATE);
