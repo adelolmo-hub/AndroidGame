@@ -16,8 +16,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -28,6 +34,8 @@ public class MenuActivity extends AppCompatActivity {
     private int musicPosition;
     private static int RESULT_OK = -1;
     private static int RESULT_CANCELED = 0;
+    public static ArrayList<Card> cards;
+
 
 
     @Override
@@ -35,8 +43,14 @@ public class MenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        DAOCard dao = new DAOCard();
+        if(cards == null) {
+            cards = dao.getCard();
+        }
+
         musicMainTheme();
     }
+
 
     public void musicMainTheme(){
         spShonenCard = getSharedPreferences("shonenCardPreference", Context.MODE_PRIVATE);
@@ -131,6 +145,8 @@ public class MenuActivity extends AppCompatActivity {
             }
         }
     }
+
+
 
 
 }

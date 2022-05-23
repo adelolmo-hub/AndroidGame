@@ -2,6 +2,7 @@ package com.example.cardgameproject;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,29 +11,31 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 public class GridAdapter extends BaseAdapter {
-    Context context;
-    ArrayList<String> champs;
-    ArrayList<Bitmap> image;
 
+    Context context;
+    ArrayList<Card> cards;
     LayoutInflater inflater;
 
 
-
-    public GridAdapter(Context context,  ArrayList<String> champs,  ArrayList<Bitmap> image) {
+    public GridAdapter(Context context, ArrayList<Card> cards) {
         this.context = context;
-        this.champs = champs;
-        this.image = image;
+        this.cards = cards;
     }
 
 
     @Override
     public int getCount() {
-        return champs.size();
+        return cards.size();
     }
 
     @Override
@@ -57,8 +60,13 @@ public class GridAdapter extends BaseAdapter {
         ImageView imageView = view.findViewById(R.id.grid_image);
         TextView textView = view.findViewById(R.id.item_name);
 
-        imageView.setImageBitmap(image.get(i));
-        textView.setText(champs.get(i));
+        Picasso.with(context).load(cards.get(i).getImageUrl()).into(imageView);
+        textView.setText(cards.get(i).getName());
+
         return view;
     }
+
+
+
+
 }
