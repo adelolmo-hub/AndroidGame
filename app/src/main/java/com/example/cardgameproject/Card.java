@@ -4,11 +4,9 @@ import android.graphics.Bitmap;
 
 public class Card {
 
-    private String uid;
     private String name;
-    private String code;
     private String imageUrl;
-
+    private String rarity;
 
     public Card(){
 
@@ -22,27 +20,19 @@ public class Card {
         this.name = name;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getRarity() {
+        return rarity;
+    }
+
+    public void setRarity(String rarity) {
+        this.rarity = rarity;
     }
 }

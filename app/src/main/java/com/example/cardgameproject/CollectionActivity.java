@@ -24,16 +24,13 @@ public class CollectionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        musicMainThemeColl();
-
         binding = ActivityCollectionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        musicMainThemeColl();
 
         GridAdapter gridAdapter = new GridAdapter(this, MenuActivity.cards);
         binding.gridView.setAdapter(gridAdapter);
-
     }
 
     public void musicMainThemeColl(){

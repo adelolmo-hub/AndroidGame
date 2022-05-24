@@ -58,10 +58,9 @@ public class GridAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.grid_item, null);
         }
         ImageView imageView = view.findViewById(R.id.grid_image);
-        TextView textView = view.findViewById(R.id.item_name);
 
         Picasso.with(context).load(cards.get(i).getImageUrl()).into(imageView);
-        textView.setText(cards.get(i).getName());
+
 
         return view;
     }

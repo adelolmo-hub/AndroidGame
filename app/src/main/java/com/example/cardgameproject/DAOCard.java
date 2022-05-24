@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class DAOCard {
 
@@ -32,7 +33,7 @@ public class DAOCard {
     }
 
     public void insertCard(Card card){
-        ref.child(card.getUid()).setValue(card);
+        ref.child(card.getName()).setValue(card);
     }
 
     public ArrayList<Card> getCard(){
@@ -47,9 +48,7 @@ public class DAOCard {
                 for(Map.Entry<String, HashMap> entry : map.entrySet()){
                     HashMap<String,String> value = entry.getValue();
                     card = new Card();
-
-                    card.setUid(entry.getKey());
-                    card.setCode(value.get("code"));
+                    card.setRarity(value.get("rarity"));
                     card.setName(value.get("name"));
                     card.setImageUrl(value.get("image"));
 
