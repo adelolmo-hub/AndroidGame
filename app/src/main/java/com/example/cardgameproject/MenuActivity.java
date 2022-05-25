@@ -45,6 +45,9 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         DAOCard dao = new DAOCard();
+        DAOUser daoUser = new DAOUser();
+        firebaseAuth = FirebaseAuth.getInstance();
+        daoUser.getUser(firebaseAuth.getCurrentUser().getUid());
         if(cards == null) {
             cards = dao.getCard();
         }

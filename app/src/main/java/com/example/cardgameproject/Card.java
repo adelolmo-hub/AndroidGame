@@ -1,12 +1,12 @@
 package com.example.cardgameproject;
 
-import android.graphics.Bitmap;
 
 public class Card {
 
     private String name;
     private String imageUrl;
     private String rarity;
+    private long price;
 
     public Card(){
 
@@ -34,5 +34,13 @@ public class Card {
 
     public void setRarity(String rarity) {
         this.rarity = rarity;
+    }
+
+    public long getPrice() {
+        return price;
+    }
+
+    public void setPrice(long price) {
+        this.price = price;
     }
 }

@@ -1,23 +1,13 @@
 package com.example.cardgameproject;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.signin.internal.Storage;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FileDownloadTask;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class DAOCard {
 
@@ -46,11 +36,12 @@ public class DAOCard {
                 Card card;
                 HashMap<String, HashMap> map = (HashMap<String, HashMap>) task.getResult().getValue();
                 for(Map.Entry<String, HashMap> entry : map.entrySet()){
-                    HashMap<String,String> value = entry.getValue();
+                    HashMap<String, Object> value = entry.getValue();
                     card = new Card();
-                    card.setRarity(value.get("rarity"));
-                    card.setName(value.get("name"));
-                    card.setImageUrl(value.get("image"));
+                    card.setRarity(String.valueOf(value.get("rarity")));
+                    card.setName(String.valueOf(value.get("name")));
+                    card.setImageUrl(String.valueOf(value.get("image")));
+                    card.setPrice((Long) value.get("price"));
 
                     listCards.add(card);
                 }

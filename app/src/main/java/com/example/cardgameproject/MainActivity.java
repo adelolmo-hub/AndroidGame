@@ -21,13 +21,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     EditText etMail, etPassword;
+    DAOUser dao = new DAOUser();
 
-    private String mail;
-    private String password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser fbUser = firebaseAuth.getCurrentUser();
 
+        dao = new DAOUser();
         if(fbUser!= null){
             goToMenu();
         }
@@ -56,16 +58,19 @@ public class MainActivity extends AppCompatActivity {
         layout.setOrientation(LinearLayout.VERTICAL);
 
         // Set an EditText view to get user input
+        final EditText userNameCreate = new EditText(this);
+        userNameCreate.setHint("UserName");
         final EditText userCreate = new EditText(this);
-        userCreate.setHint("User");
+        userCreate.setHint("Email");
         final EditText passwordCreate = new EditText(this);
         passwordCreate.setHint("Password");
         final EditText passwordValidation = new EditText(this);
         passwordValidation.setHint("Repeat your password");
 
-        passwordCreate.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        passwordValidation.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordCreate.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        passwordValidation.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
+        layout.addView(userNameCreate);
         layout.addView(userCreate);
         layout.addView(passwordCreate);
         layout.addView(passwordValidation);
@@ -76,13 +81,14 @@ public class MainActivity extends AppCompatActivity {
         dialogCreateAccount.setOnShowListener(dialog -> {
             Button button = dialogCreateAccount.getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(v -> {
+                boolean usernameEmpty = isEmpty(userNameCreate, "Username can't be empty");
                 boolean userEmpty = isEmpty(userCreate,getString(R.string.userEmpty));
                 boolean passwordEmpty = isEmpty(passwordCreate, getString(R.string.passwordEmpty));
                 boolean passwordValidationEmpty = isEmpty(passwordValidation, getString(R.string.passwordEmpty));
 
-                if(!userEmpty && !passwordEmpty && !passwordValidationEmpty){
+                if(!userEmpty && !passwordEmpty && !passwordValidationEmpty && !usernameEmpty){
                     if (passwordCreate.getText().toString().equals(passwordValidation.getText().toString())) {
-                        createAccount(userCreate.getText().toString(), passwordCreate.getText().toString());
+                        createAccount(userCreate.getText().toString(), passwordCreate.getText().toString(), userNameCreate.getText().toString());
 
                     }else {
                         passwordValidation.setError("Password doesn't match, try again");
@@ -94,10 +100,23 @@ public class MainActivity extends AppCompatActivity {
         dialogCreateAccount.show();
     }
 
-    private void createAccount(String mail, String password) {
+    private void createAccount(String mail, String password, String username) {
         firebaseAuth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
+                User user = new User(username, mail);
+                dao.insertCard(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), user);
                 Toast.makeText(MainActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
+                firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            goToMenu();
+                        }else{
+                            String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
+                            dameToastdeerror(errorCode);
+                        }
+                    }
+                });
             }else{
                 String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
                 dameToastdeerror(errorCode);
@@ -109,8 +128,8 @@ public class MainActivity extends AppCompatActivity {
         boolean userEmpty = isEmpty(etMail,getString(R.string.userEmpty));
         boolean passwordEmpty = isEmpty(etPassword, getString(R.string.passwordEmpty));
 
-        mail = etMail.getText().toString();
-        password = etPassword.getText().toString();
+        String mail = etMail.getText().toString();
+        String password = etPassword.getText().toString();
 
         if(!userEmpty && !passwordEmpty){
             firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

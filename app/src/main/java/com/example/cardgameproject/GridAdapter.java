@@ -1,8 +1,6 @@
 package com.example.cardgameproject;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,15 +8,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class GridAdapter extends BaseAdapter {
 
@@ -58,7 +50,11 @@ public class GridAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.grid_item, null);
         }
         ImageView imageView = view.findViewById(R.id.grid_image);
+        TextView price = view.findViewById(R.id.tvPrice);
+        TextView name = view.findViewById(R.id.tvName);
 
+        name.setText(cards.get(i).getName());
+        price.setText(String.valueOf("Price: " + cards.get(i).getPrice()));
         Picasso.with(context).load(cards.get(i).getImageUrl()).into(imageView);
 
 
