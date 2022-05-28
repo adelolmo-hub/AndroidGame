@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
     EditText etMail, etPassword;
-    DAOUser dao = new DAOUser();
+    DAOUser dao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser fbUser = firebaseAuth.getCurrentUser();
 
-        dao = new DAOUser();
         if(fbUser!= null){
             goToMenu();
         }
@@ -104,17 +103,15 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 User user = new User(username, mail);
-                dao.insertCard(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid(), user);
+                dao = new DAOUser(firebaseAuth.getCurrentUser().getUid());
+                dao.insertUser(Objects.requireNonNull(user));
                 Toast.makeText(MainActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
-                firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            goToMenu();
-                        }else{
-                            String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
-                            dameToastdeerror(errorCode);
-                        }
+                firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(task1 -> {
+                    if(task1.isSuccessful()){
+                        goToMenu();
+                    }else{
+                        String errorCode = ((FirebaseAuthException) task1.getException()).getErrorCode();
+                        dameToastdeerror(errorCode);
                     }
                 });
             }else{

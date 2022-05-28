@@ -28,7 +28,7 @@ public class DAOCard {
 
     public ArrayList<Card> getCard(){
         ArrayList<Card> listCards = new ArrayList<>();
-        ref.get().addOnCompleteListener(task -> {
+         ref.get().addOnCompleteListener(task -> {
             if(!task.isSuccessful()){
                 Log.e("firebase", "Error getting data",task.getException());
             }

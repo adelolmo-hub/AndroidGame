@@ -1,6 +1,8 @@
 package com.example.cardgameproject;
 
 import android.content.Context;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +19,17 @@ public class GridAdapter extends BaseAdapter {
     Context context;
     ArrayList<Card> cards;
     LayoutInflater inflater;
+    User user;
+    ColorMatrix matrix = new ColorMatrix();
+    ColorMatrixColorFilter colorFilter;
 
 
-    public GridAdapter(Context context, ArrayList<Card> cards) {
+    public GridAdapter(Context context, ArrayList<Card> cards, User user) {
         this.context = context;
         this.cards = cards;
+        this.user = user;
+        matrix.setSaturation(0);
+        colorFilter = new ColorMatrixColorFilter(matrix);
     }
 
 
@@ -42,7 +50,11 @@ public class GridAdapter extends BaseAdapter {
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
+        String fragments = null;
 
+        if(!(user.getObtainedFragments() == null)){
+            fragments = user.getObtainedFragments().get(cards.get(i).getName());
+        }
         if(inflater == null){
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -53,10 +65,22 @@ public class GridAdapter extends BaseAdapter {
         TextView price = view.findViewById(R.id.tvPrice);
         TextView name = view.findViewById(R.id.tvName);
 
-        name.setText(cards.get(i).getName());
-        price.setText(String.valueOf("Price: " + cards.get(i).getPrice()));
+
+        price.setText("Price: " + cards.get(i).getPrice());
         Picasso.with(context).load(cards.get(i).getImageUrl()).into(imageView);
 
+
+        if(!"complete".equals(fragments)){
+            imageView.setColorFilter(colorFilter);
+            if(fragments == null){
+                name.setText("You don't have any fragment");
+            }else{
+                name.setText("Fragments: " + fragments);
+            }
+        }else{
+            imageView.setColorFilter(null);
+            name.setText("Complete");
+        }
 
         return view;
     }
