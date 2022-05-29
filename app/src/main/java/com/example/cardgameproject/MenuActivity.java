@@ -186,6 +186,9 @@ public class MenuActivity extends AppCompatActivity {
         createAccountBuilder.show();
     }
 
-
+    public void onClickPlay(View view){
+        Intent i = new Intent(this, GameActivity.class);
+        startActivity(i);
+    }
 
 }

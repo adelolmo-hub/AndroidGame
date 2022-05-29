@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MenuActivity"
-    android:background="@drawable/background_game">
+    android:background="@drawable/background_game"
+    tools:context=".MenuActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -31,6 +31,7 @@
             android:id="@+id/imageView6"
             android:layout_width="match_parent"
             android:layout_height="70dp"
+            android:onClick="onClickPlay"
             app:srcCompat="@drawable/buttonstyle" />
 
         <ImageView
