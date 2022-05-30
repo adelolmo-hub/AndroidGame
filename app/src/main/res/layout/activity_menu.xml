@@ -31,7 +31,6 @@
             android:id="@+id/imageView6"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:onClick="onClickPlay"
             app:srcCompat="@drawable/buttonstyle" />
 
         <ImageView
@@ -64,6 +63,7 @@
             android:layout_marginLeft="70dp"
             android:layout_marginRight="70dp"
             android:background="#00000000"
+            android:onClick="onClickPlay"
             android:text="Play"
             android:textColor="#00FFFF" />
 
