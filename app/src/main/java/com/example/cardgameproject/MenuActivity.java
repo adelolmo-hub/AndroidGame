@@ -84,6 +84,7 @@ public class MenuActivity extends AppCompatActivity {
         Intent i = new Intent(this, CollectionActivity.class);
         i.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
         i.putExtra("user", user);
+        i.putExtra("cards", cards);
         musicShonenCard.pause();
         startActivityForResult(i, ID2);
     }

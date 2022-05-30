@@ -82,4 +82,8 @@ public class DAOUser {
     public User getUser(){
         return user;
     }
+
+    public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap){
+        return databaseReference.child("CardFragments").updateChildren(hashMap);
+    }
 }

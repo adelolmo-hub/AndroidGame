@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
@@ -20,24 +21,60 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CollectionActivity extends AppCompatActivity {
 
 
     ActivityCollectionBinding binding;
     private SharedPreferences spShonenCard;
+    public static ArrayList<Card> cards;
+    DAOUser daoUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityCollectionBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        User user = (User) getIntent().getSerializableExtra("user");
         musicMainThemeColl();
 
-        GridAdapter gridAdapter = new GridAdapter(this, MenuActivity.cards, user);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        daoUser = new DAOUser(firebaseAuth.getCurrentUser().getUid());
+
+        cards = (ArrayList<Card>) getIntent().getSerializableExtra("cards");
+        User user = (User) getIntent().getSerializableExtra("user");
+
+
+        GridAdapter gridAdapter = new GridAdapter(this, cards, user);
         binding.gridView.setAdapter(gridAdapter);
 
+        binding.gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Card card = cards.get(i);
+                TextView textPrice = view.findViewById(R.id.tvPrice);
+                AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(adapterView.getContext());
+                createAccountBuilder.setTitle("Do you want to buy this card??");
+                createAccountBuilder.setMessage(textPrice.getText().toString() + "\nYour money: " + user.getBerry());
+                createAccountBuilder.setNegativeButton("", null);
+                createAccountBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                       int newMoney = user.getBerry() - Integer.parseInt(textPrice.getText().toString().replaceAll("\\D+",""));
+                       HashMap<String, Object> map = new HashMap<>();
+                       map.put(card.getName(), "complete");
+                        daoUser.updateUserBuyCard(map);
+                        daoUser.updateBerry(newMoney);
+                    }
+                });
+                createAccountBuilder.show();
+            }
+        });
     }
 
     public void musicMainThemeColl(){

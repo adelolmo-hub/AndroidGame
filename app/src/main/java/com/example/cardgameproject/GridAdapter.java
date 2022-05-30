@@ -13,9 +13,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class GridAdapter extends BaseAdapter {
 
@@ -26,6 +28,7 @@ public class GridAdapter extends BaseAdapter {
     ColorMatrix matrix = new ColorMatrix();
     ColorMatrixColorFilter colorFilter;
 
+    Card card;
 
     public GridAdapter(Context context, ArrayList<Card> cards, User user) {
         this.context = context;
@@ -68,32 +71,18 @@ public class GridAdapter extends BaseAdapter {
         TextView price = view.findViewById(R.id.tvPrice);
         TextView name = view.findViewById(R.id.tvName);
 
+        card = cards.get(i);
 
-
-        Picasso.with(context).load(cards.get(i).getImageUrl()).into(imageView);
+        Picasso.with(context).load(card.getImageUrl()).into(imageView);
 
 
         if(!"complete".equals(fragments)){
             imageView.setColorFilter(colorFilter);
-            imageView.setOnClickListener(clickListenerView -> {
-                AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(clickListenerView.getContext());
-                createAccountBuilder.setTitle("Do you want to buy this card??");
-                createAccountBuilder.setMessage("Price " + cards.get(i).getPrice() + "\nYour money: " + user.getBerry());
-                createAccountBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-                    }
-                });
-                createAccountBuilder.setNegativeButton("Cancell", null);
-
-                createAccountBuilder.show();
-            });
             if(fragments == null){
                 name.setText("You don't have any fragment");
-                price.setText("Price: " + cards.get(i).getPrice());
+                price.setText("Price: " + card.getPrice());
             }else{
-                int finalPrice = Math.toIntExact((cards.get(i).getPrice() / 6) * Integer.parseInt(fragments));
+                int finalPrice = Math.toIntExact((card.getPrice() / 6) * Integer.parseInt(fragments));
                 name.setText("Fragments: " + fragments);
                 price.setText("Price: " + finalPrice);
             }
