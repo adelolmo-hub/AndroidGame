@@ -9,32 +9,47 @@
     <GridView
         android:id="@+id/grid_rival"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
+        android:layout_height="145dp"
+        android:numColumns="3"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp">
-    </GridView>
-    <GridView
-        android:id="@+id/gv_board"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="25dp"
-        android:layout_marginBottom="25dp"
-        app:layout_constraintBottom_toTopOf="@+id/grid_main_player"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/grid_rival" >
+        tools:layout_editor_absoluteX="16dp"></GridView>
 
-    </GridView>
     <GridView
         android:id="@+id/grid_main_player"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
+        android:layout_height="145dp"
+        android:numColumns="3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
 
     </GridView>
+
+    <LinearLayout
+        android:id="@+id/board_rival"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/space"
+        app:layout_constraintTop_toBottomOf="@+id/grid_rival"
+        tools:layout_editor_absoluteX="0dp"></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/board_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/grid_main_player"
+        app:layout_constraintTop_toBottomOf="@+id/space"></LinearLayout>
+
+    <Space
+        android:id="@+id/space"
+        android:layout_width="165dp"
+        android:layout_height="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="320dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
