@@ -8,7 +8,9 @@ import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
@@ -36,61 +38,84 @@ public class GameActivity extends AppCompatActivity {
 
 
         createGame();
+
         gridMainPlayer.setOnItemClickListener((adapterView, view, position, l) -> {
-            if(gridMainPlayer.findViewById(R.id.grid_cards) instanceof ImageView) {
-                ImageView card = (ImageView) gridMainPlayer.findViewById(R.id.grid_cards);
-                card.setOnLongClickListener(view1 -> {
-                    ImageView hola = (ImageView) view1;
-                    ClipData.Item item = new ClipData.Item((CharSequence) view1.getTag());
-                    ClipData dragData = new ClipData(
-                            (CharSequence) view1.getTag(),
-                            new String[] { ClipDescription.MIMETYPE_TEXT_PLAIN },
-                            item);
-                    View.DragShadowBuilder myShadow = new DragShadowCardBuilder(card);
-                    view1.startDragAndDrop(dragData,  // The data to be dragged
-                            myShadow,  // The drag shadow builder
-                            null,      // No need to use local data
-                            0          // Flags (not currently used, set to 0)
-                    );
-                    return true;
+            if (gridMainPlayer.findViewById(R.id.grid_cards) instanceof ImageView) {
+                ImageView card = gridMainPlayer.findViewById(R.id.grid_cards);
+                card.setOnTouchListener((view1, motionEvent) -> {
+                    if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                        ClipData data = ClipData.newPlainText("", "");
+                        View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view1);
+                        view1.startDrag(data, shadowBuilder, view1, 0);
+                        view1.setVisibility(View.INVISIBLE);
+                        return true;
+                    } else {
+                        return false;
+                    }
                 });
+
+
             }
 
         });
+
+        gridBoardMain.setOnDragListener((v, event) -> {
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    // do nothing
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    v.setBackgroundResource(R.drawable.logo);
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    v.setBackgroundResource(R.drawable.background_game);
+                    break;
+                case DragEvent.ACTION_DROP:
+                    // Dropped, reassign View to ViewGroup
+                    View view = (View) event.getLocalState();
+                    ViewGroup owner = (ViewGroup) view.getParent();
+                    owner.removeView(view);
+                    LinearLayout container = (LinearLayout) v;
+                    container.addView(view);
+                    view.setVisibility(View.VISIBLE);
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    v.setBackgroundResource(R.drawable.background_game);
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        });
+
+
         gridMainPlayer.setOnDragListener((v, event) -> {
             switch(event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    // code block
-                    ImageView imageView = new ImageView(v.getContext());
-                    imageView.setImageResource(R.drawable.button_rounded);
-                    imageView.setMaxHeight(145);
-                    imageView.setMaxWidth(100);
-                    imageView.setMinimumHeight(145);
-                    imageView.setMinimumWidth(100);
-                    gridBoardMain.addView(imageView);
-                    String hola = "hola";
+                    // do nothing
                     break;
-
-                case DragEvent.ACTION_DROP:
-                    // code block
-                    gridBoardMain.addView(v);
-                    break;
-
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    // code block
-                    String w = "hola";
+                    v.setBackgroundResource(R.drawable.logo);
                     break;
-
                 case DragEvent.ACTION_DRAG_EXITED:
-                    // code block
-                    String r = "hola";
+                    v.setBackgroundResource(R.drawable.background_game);
                     break;
+                case DragEvent.ACTION_DROP:
+                    // Dropped, reassign View to ViewGroup
+                    View view = (View) event.getLocalState();
+                    ViewGroup owner = (ViewGroup) view.getParent();
+                    owner.removeView(view);
+                    LinearLayout container = (LinearLayout) v;
+                    container.addView(view);
+                    view.setVisibility(View.VISIBLE);
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    v.setBackgroundResource(R.drawable.background_game);
+                    break;
+                default:
             }
-
-            return false;
+            return true;
         });
-
-
     }
 
     public void createGame(){
