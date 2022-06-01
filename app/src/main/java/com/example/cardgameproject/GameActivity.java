@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -22,7 +23,7 @@ import java.util.Collections;
 public class GameActivity extends AppCompatActivity {
     private GridView gridRival;
     private GridView gridMainPlayer;
-    private LinearLayout gridBoardMain;
+    private static LinearLayout gridBoardMain;
     private LinearLayout gridBoardRival;
     private static final int PLAYER_HAND_QTY = 3;
     @Override
@@ -63,13 +64,20 @@ public class GameActivity extends AppCompatActivity {
 
             }
         });*/
-        gridMainPlayer.setOnDragListener(new View.OnDragListener() {
+        /*gridMainPlayer.setOnDragListener(new View.OnDragListener() {
             @Override
             public boolean onDrag(View v, DragEvent event) {
                 switch(event.getAction()) {
                     case DragEvent.ACTION_DRAG_STARTED:
                         // code block
-                        gridBoardMain.addView(v);
+                        v.get
+                        ImageView imageView = new ImageView(v.getContext());
+                        imageView.setImageResource(R.drawable.button_rounded);
+                        imageView.setMaxHeight(145);
+                        imageView.setMaxWidth(100);
+                        imageView.setMinimumHeight(145);
+                        imageView.setMinimumWidth(100);
+                        gridBoardMain.addView(imageView);
                         String hola = "hola";
                         break;
 
@@ -89,25 +97,6 @@ public class GameActivity extends AppCompatActivity {
                         break;
                 }
 
-                return false;
-            }
-        });
-        /*View.OnLongClickListener onClickCardListener = new View.OnLongClickListener(){
-
-            @Override
-            public boolean onLongClick(View view) {
-                ImageView hola = (ImageView) view;
-                ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
-                ClipData dragData = new ClipData(
-                        (CharSequence) view.getTag(),
-                        new String[] { ClipDescription.MIMETYPE_TEXT_PLAIN },
-                        item);
-                View.DragShadowBuilder myShadow = new DragShadowCardBuilder(view);
-                view.startDragAndDrop(dragData,  // The data to be dragged
-                        myShadow,  // The drag shadow builder
-                        null,      // No need to use local data
-                        0          // Flags (not currently used, set to 0)
-                );
                 return false;
             }
         });*/
@@ -139,5 +128,9 @@ public class GameActivity extends AppCompatActivity {
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             rivalPlayerHand.add(mainPlayerDeck.get(i));
         }
+    }
+
+    public static LinearLayout getMainLayout(){
+        return gridBoardMain;
     }
 }

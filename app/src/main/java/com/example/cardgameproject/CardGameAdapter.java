@@ -3,6 +3,7 @@ package com.example.cardgameproject;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,10 +55,10 @@ public class CardGameAdapter extends BaseAdapter {
         imageView.setMaxWidth(100);
         imageView.setMinimumHeight(145);
         imageView.setMinimumWidth(100);
-        imageView.setOnLongClickListener(new View.OnLongClickListener(){
+        imageView.setOnDragListener(new View.OnDragListener(){
 
             @Override
-            public boolean onLongClick(View view) {
+            public boolean onDrag(View view, DragEvent event) {
                 ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
                 ClipData dragData = new ClipData(
                         (CharSequence) view.getTag(),
