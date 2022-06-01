@@ -36,70 +36,59 @@ public class GameActivity extends AppCompatActivity {
 
 
         createGame();
-        /*gridMainPlayer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                if(gridMainPlayer.getChildAt(position) instanceof ImageView) {
-                    ImageView card = (ImageView) gridMainPlayer.getChildAt(position);
-                    card.setOnLongClickListener(new View.OnLongClickListener(){
-
-                        @Override
-                        public boolean onLongClick(View view) {
-                            ImageView hola = (ImageView) view;
-                            ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
-                            ClipData dragData = new ClipData(
-                                    (CharSequence) view.getTag(),
-                                    new String[] { ClipDescription.MIMETYPE_TEXT_PLAIN },
-                                    item);
-                            View.DragShadowBuilder myShadow = new DragShadowCardBuilder(card);
-                            view.startDragAndDrop(dragData,  // The data to be dragged
-                                    myShadow,  // The drag shadow builder
-                                    null,      // No need to use local data
-                                    0          // Flags (not currently used, set to 0)
-                            );
-                            return true;
-                        }
-                    });
-                }
-
+        gridMainPlayer.setOnItemClickListener((adapterView, view, position, l) -> {
+            if(gridMainPlayer.findViewById(R.id.grid_cards) instanceof ImageView) {
+                ImageView card = (ImageView) gridMainPlayer.findViewById(R.id.grid_cards);
+                card.setOnLongClickListener(view1 -> {
+                    ImageView hola = (ImageView) view1;
+                    ClipData.Item item = new ClipData.Item((CharSequence) view1.getTag());
+                    ClipData dragData = new ClipData(
+                            (CharSequence) view1.getTag(),
+                            new String[] { ClipDescription.MIMETYPE_TEXT_PLAIN },
+                            item);
+                    View.DragShadowBuilder myShadow = new DragShadowCardBuilder(card);
+                    view1.startDragAndDrop(dragData,  // The data to be dragged
+                            myShadow,  // The drag shadow builder
+                            null,      // No need to use local data
+                            0          // Flags (not currently used, set to 0)
+                    );
+                    return true;
+                });
             }
-        });*/
-        /*gridMainPlayer.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                switch(event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // code block
-                        v.get
-                        ImageView imageView = new ImageView(v.getContext());
-                        imageView.setImageResource(R.drawable.button_rounded);
-                        imageView.setMaxHeight(145);
-                        imageView.setMaxWidth(100);
-                        imageView.setMinimumHeight(145);
-                        imageView.setMinimumWidth(100);
-                        gridBoardMain.addView(imageView);
-                        String hola = "hola";
-                        break;
 
-                    case DragEvent.ACTION_DROP:
-                        // code block
-                        gridBoardMain.addView(v);
-                        break;
+        });
+        gridMainPlayer.setOnDragListener((v, event) -> {
+            switch(event.getAction()) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    // code block
+                    ImageView imageView = new ImageView(v.getContext());
+                    imageView.setImageResource(R.drawable.button_rounded);
+                    imageView.setMaxHeight(145);
+                    imageView.setMaxWidth(100);
+                    imageView.setMinimumHeight(145);
+                    imageView.setMinimumWidth(100);
+                    gridBoardMain.addView(imageView);
+                    String hola = "hola";
+                    break;
 
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        // code block
-                        String w = "hola";
-                        break;
+                case DragEvent.ACTION_DROP:
+                    // code block
+                    gridBoardMain.addView(v);
+                    break;
 
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        // code block
-                        String r = "hola";
-                        break;
-                }
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    // code block
+                    String w = "hola";
+                    break;
 
-                return false;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    // code block
+                    String r = "hola";
+                    break;
             }
-        });*/
+
+            return false;
+        });
 
 
     }
