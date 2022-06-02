@@ -29,27 +29,23 @@
     <LinearLayout
         android:id="@+id/board_rival"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="32dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/space"
-        app:layout_constraintTop_toBottomOf="@+id/grid_rival"
-        tools:layout_editor_absoluteX="0dp"></LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/grid_rival"></LinearLayout>
 
     <LinearLayout
         android:id="@+id/board_main"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="130dp"
+        android:layout_marginBottom="32dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/grid_main_player"
-        app:layout_constraintTop_toBottomOf="@+id/space"></LinearLayout>
-
-    <Space
-        android:id="@+id/space"
-        android:layout_width="165dp"
-        android:layout_height="0dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="320dp" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

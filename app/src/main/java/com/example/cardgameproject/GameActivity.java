@@ -25,9 +25,11 @@ import java.util.Collections;
 public class GameActivity extends AppCompatActivity {
     private GridView gridRival;
     private GridView gridMainPlayer;
-    private static LinearLayout gridBoardMain;
+    private LinearLayout gridBoardMain;
     private LinearLayout gridBoardRival;
     private static final int PLAYER_HAND_QTY = 3;
+    private static Drawable lastImageDrawable;
+    private static ArrayList<Card> mainPlayerDeck = MenuActivity.cards;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,11 +37,12 @@ public class GameActivity extends AppCompatActivity {
         gridRival = findViewById(R.id.grid_rival);
         gridMainPlayer = findViewById(R.id.grid_main_player);
         gridBoardMain = findViewById(R.id.board_main);
+        gridBoardRival = findViewById(R.id.board_rival);
 
 
         createGame();
 
-        gridMainPlayer.setOnItemClickListener((adapterView, view, position, l) -> {
+        /*gridMainPlayer.setOnItemClickListener((adapterView, view, position, l) -> {
             if (gridMainPlayer.findViewById(R.id.grid_cards) instanceof ImageView) {
                 ImageView card = gridMainPlayer.findViewById(R.id.grid_cards);
                 card.setOnTouchListener((view1, motionEvent) -> {
@@ -57,7 +60,7 @@ public class GameActivity extends AppCompatActivity {
 
             }
 
-        });
+        });*/
 
         gridBoardMain.setOnDragListener((v, event) -> {
             switch (event.getAction()) {
@@ -65,22 +68,26 @@ public class GameActivity extends AppCompatActivity {
                     // do nothing
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundResource(R.drawable.logo);
+
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
-                    v.setBackgroundResource(R.drawable.background_game);
+
                     break;
                 case DragEvent.ACTION_DROP:
+                    ImageView card = new ImageView(this);
+                    card.setImageDrawable(getLastImageDrawable());
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 200, gridBoardMain.getHeight(), 100);
+                    card.setLayoutParams(layoutParams);
+                    gridBoardMain.addView(card);
                     // Dropped, reassign View to ViewGroup
-                    View view = (View) event.getLocalState();
+                    /*View view = (View) event.getLocalState();
                     ViewGroup owner = (ViewGroup) view.getParent();
                     owner.removeView(view);
                     LinearLayout container = (LinearLayout) v;
                     container.addView(view);
-                    view.setVisibility(View.VISIBLE);
+                    view.setVisibility(View.VISIBLE);*/
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
-                    v.setBackgroundResource(R.drawable.background_game);
                     break;
                 default:
                     break;
@@ -89,7 +96,7 @@ public class GameActivity extends AppCompatActivity {
         });
 
 
-        gridMainPlayer.setOnDragListener((v, event) -> {
+        /*gridMainPlayer.setOnDragListener((v, event) -> {
             switch(event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     // do nothing
@@ -115,7 +122,7 @@ public class GameActivity extends AppCompatActivity {
                 default:
             }
             return true;
-        });
+        });*/
     }
 
     public void createGame(){
@@ -123,12 +130,13 @@ public class GameActivity extends AppCompatActivity {
         MainPlayer mainPlayer = new MainPlayer("Albert", 100);
         //ArrayList<Card> mainPlayerDeck = mainPlayer.getPlayerDeck();
         ArrayList<ImageView> imageCards = new ArrayList<>();
-        ArrayList<Card> mainPlayerDeck = MenuActivity.cards;
+
         ArrayList<Card> mainPlayerHand = new ArrayList<>();
         ArrayList<Card> rivalPlayerHand = new ArrayList<>();
         Collections.shuffle(mainPlayerDeck);
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             mainPlayerHand.add(mainPlayerDeck.get(i));
+            mainPlayerDeck.remove(i);
         }
        /* for (Card card : mainPlayerHand){
             ImageView imageCard = new ImageView(this);
@@ -141,10 +149,21 @@ public class GameActivity extends AppCompatActivity {
         gridMainPlayer.setAdapter(cardAdapter);
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             rivalPlayerHand.add(mainPlayerDeck.get(i));
+
         }
     }
 
-    public static LinearLayout getMainLayout(){
-        return gridBoardMain;
+    public static void setLastDrawableImage(Drawable cardDrawable){
+        lastImageDrawable = cardDrawable;
+    }
+
+    public static Drawable getLastImageDrawable() {
+        return lastImageDrawable;
+    }
+
+    public static Card getFirstCardDeck(){
+        Card firstCard = mainPlayerDeck.get(0);
+        mainPlayerDeck.remove(0);
+        return firstCard;
     }
 }
