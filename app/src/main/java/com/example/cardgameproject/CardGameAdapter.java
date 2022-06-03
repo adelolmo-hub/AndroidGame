@@ -3,7 +3,6 @@ package com.example.cardgameproject;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
-import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,14 +43,15 @@ public class CardGameAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int i, View v, ViewGroup viewGroup) {
         if(inflater == null){
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
-        if(view == null){
-            view = inflater.inflate(R.layout.grid_mainchar, null);
+        if(v == null){
+            v = inflater.inflate(R.layout.grid_mainchar, null);
         }
-        ImageView imageView = view.findViewById(R.id.grid_cards);
+        v.setTag("IDLL"+i);
+        ImageView imageView = v.findViewById(R.id.grid_cards);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 290);
         layoutParams.setMargins(30,0,30,0);
         imageView.setLayoutParams(layoutParams);
@@ -72,42 +72,14 @@ public class CardGameAdapter extends BaseAdapter {
                         0          // Flags (not currently used, set to 0)
                 );
                 view.setVisibility(View.GONE);
-                return true;
-            }
-        });
-        /*LinearLayout layout = view.findViewById(R.id.lay_main);
-        layout.setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View v, DragEvent event) {
-                switch(event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // code block
-                        GameActivity.getMainLayout().addView(imageView);
-                        String hola = "hola";
-                        break;
-
-                    case DragEvent.ACTION_DROP:
-                        // code block
-                        GameActivity.getMainLayout().addView(v);
-                        break;
-
-                    case DragEvent.ACTION_DRAG_ENTERED:
-                        // code block
-                        String w = "hola";
-                        break;
-
-                    case DragEvent.ACTION_DRAG_EXITED:
-                        // code block
-                        String r = "hola";
-                        break;
-                }
-
+                GameActivity.setLastViewClicked((View) imageView.getParent());
                 return false;
             }
-        });*/
+        });
+
         card = cards.get(i);
 
         Picasso.with(context).load(card.getImageUrl()).into(imageView);
-        return view;
+        return v;
     }
 }

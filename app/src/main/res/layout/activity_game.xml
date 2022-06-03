@@ -6,13 +6,25 @@
     android:layout_height="match_parent"
     tools:context=".GameActivity">
 
-    <GridView
+    <Space
+        android:id="@+id/space"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
         android:id="@+id/grid_rival"
         android:layout_width="match_parent"
         android:layout_height="145dp"
         android:numColumns="3"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="16dp"></GridView>
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
 
     <GridView
         android:id="@+id/grid_main_player"
@@ -29,9 +41,9 @@
     <LinearLayout
         android:id="@+id/board_rival"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:layout_marginTop="32dp"
+        android:layout_height="0dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/space"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,12 +52,12 @@
     <LinearLayout
         android:id="@+id/board_main"
         android:layout_width="match_parent"
-        android:layout_height="130dp"
-        android:layout_marginBottom="32dp"
+        android:layout_height="0dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/grid_main_player"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"></LinearLayout>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/space"></LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
