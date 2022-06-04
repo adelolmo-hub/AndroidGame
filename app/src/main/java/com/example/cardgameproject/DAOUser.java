@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -42,6 +43,16 @@ public class DAOUser {
                     user.setEmail(snapshot.child("email").getValue(String.class));
                     user.setBerry(snapshot.child("berry").getValue(Integer.class));
                     user.setObtainedFragments((HashMap<String, String>) snapshot.child("CardFragments").getValue());
+                    ArrayList<Card> deck = new ArrayList<>();
+                    for(HashMap<String, Object> map : (ArrayList<HashMap>)snapshot.child("Deck").getValue()){
+                        Card card = new Card();
+                        card.setName((String) map.get("name"));
+                        card.setPrice((Long) map.get("price"));
+                        card.setRarity((String) map.get("rarity"));
+                        card.setImageUrl((String) map.get("imageUrl"));
+                        deck.add(card);
+                    }
+                    user.setDeck(deck);
             }
 
             @Override
@@ -85,5 +96,11 @@ public class DAOUser {
 
     public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap){
         return databaseReference.child("CardFragments").updateChildren(hashMap);
+    }
+
+    public Task<Void> updateUserDeck(ArrayList<Card> deck){
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("Deck", deck);
+        return databaseReference.updateChildren(hashMap);
     }
 }

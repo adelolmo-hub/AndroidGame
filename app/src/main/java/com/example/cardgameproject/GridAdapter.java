@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -18,10 +20,13 @@ public class GridAdapter extends BaseAdapter {
 
     Context context;
     ArrayList<Card> cards;
+    ArrayList<Card> deck;
     LayoutInflater inflater;
     User user;
     ColorMatrix matrix = new ColorMatrix();
     ColorMatrixColorFilter colorFilter;
+    FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    DAOUser daoUser;
 
     Card card;
 
@@ -31,6 +36,8 @@ public class GridAdapter extends BaseAdapter {
         this.user = user;
         matrix.setSaturation(0);
         colorFilter = new ColorMatrixColorFilter(matrix);
+        deck = user.getDeck();
+        daoUser = new DAOUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
     }
 
 
@@ -69,8 +76,11 @@ public class GridAdapter extends BaseAdapter {
         card = cards.get(i);
 
         Picasso.with(context).load(card.getImageUrl()).into(imageView);
+        if(deck.contains(card)){
+            imageView.setBackgroundResource(R.drawable.highlight);
+        }
 
-
+        imageView.setTag(card);
         if(!"complete".equals(fragments)){
             imageView.setColorFilter(colorFilter);
             if(fragments == null){
@@ -86,12 +96,18 @@ public class GridAdapter extends BaseAdapter {
             name.setText("Complete");
             imageView.setOnLongClickListener(longClickListenerView -> {
                     ImageView im = longClickListenerView.findViewById(R.id.grid_image);
-                    im.setBackgroundResource(R.drawable.highlight);
+                    Card cardPrueba = (Card) longClickListenerView.getTag();
+                    if(deck.contains(cardPrueba)){
+                        deck.remove(cardPrueba);
+                        im.setBackgroundResource(android.R.color.transparent);
+                    }else {
+                        deck.add(cardPrueba);
+                        im.setBackgroundResource(R.drawable.highlight);
+                    }
+                    daoUser.updateUserDeck(deck);
                     return true;
             });
         }
-
-
         return view;
     }
 

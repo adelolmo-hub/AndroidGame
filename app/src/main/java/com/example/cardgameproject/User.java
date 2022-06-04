@@ -12,6 +12,7 @@ public class User implements Serializable {
     private String email;
     private int berry;
     private HashMap<String, String> obtainedFragments;
+    private ArrayList<Card> deck;
 
 
     public User(){
@@ -55,4 +56,11 @@ public class User implements Serializable {
         this.obtainedFragments = obtainedFragments;
     }
 
+    public ArrayList<Card> getDeck() {
+        return deck;
+    }
+
+    public void setDeck(ArrayList<Card> deck) {
+        this.deck = deck;
+    }
 }
