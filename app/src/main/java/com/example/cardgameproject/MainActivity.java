@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -103,6 +105,18 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener(task -> {
             if(task.isSuccessful()){
                 User user = new User(username, mail);
+                HashMap<String, String> obtainedFragments = new HashMap<>();
+                ArrayList<Card> deck = new ArrayList<>();
+                Card card = new Card();
+                card.setName("Luffy");
+                card.setPrice(300);
+                card.setImageUrl("https://firebasestorage.googleapis.com/v0/b/cardgame-15ba2.appspot.com/o/CardImages%2Feren.png?alt=media&token=05a8a61e-20b0-4a23-8ed4-25f4d897f306");
+                card.setRarity("Commmon");
+                obtainedFragments.put("Luffy", "complete");
+                obtainedFragments.put("Eren", "complete");
+                user.setObtainedFragments(obtainedFragments);
+                deck.add(card);
+                user.setDeck(deck);
                 dao = new DAOUser(firebaseAuth.getCurrentUser().getUid());
                 dao.insertUser(Objects.requireNonNull(user));
                 Toast.makeText(MainActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();

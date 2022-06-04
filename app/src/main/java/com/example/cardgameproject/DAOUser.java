@@ -42,9 +42,9 @@ public class DAOUser {
                     user.setUserName(snapshot.child("userName").getValue(String.class));
                     user.setEmail(snapshot.child("email").getValue(String.class));
                     user.setBerry(snapshot.child("berry").getValue(Integer.class));
-                    user.setObtainedFragments((HashMap<String, String>) snapshot.child("CardFragments").getValue());
+                    user.setObtainedFragments((HashMap<String, String>) snapshot.child("obtainedFragments").getValue());
                     ArrayList<Card> deck = new ArrayList<>();
-                    for(HashMap<String, Object> map : (ArrayList<HashMap>)snapshot.child("Deck").getValue()){
+                    for(HashMap<String, Object> map : (ArrayList<HashMap>)snapshot.child("deck").getValue()){
                         Card card = new Card();
                         card.setName((String) map.get("name"));
                         card.setPrice((Long) map.get("price"));
@@ -87,7 +87,7 @@ public class DAOUser {
         }else{
             hashMap.put(cardName, String.valueOf(fragments));
         }
-        return databaseReference.child("CardFragments").updateChildren(hashMap);
+        return databaseReference.child("obtainedFragments").updateChildren(hashMap);
     }
 
     public User getUser(){
@@ -95,12 +95,12 @@ public class DAOUser {
     }
 
     public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap){
-        return databaseReference.child("CardFragments").updateChildren(hashMap);
+        return databaseReference.child("obtainedFragments").updateChildren(hashMap);
     }
 
     public Task<Void> updateUserDeck(ArrayList<Card> deck){
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("Deck", deck);
+        hashMap.put("deck", deck);
         return databaseReference.updateChildren(hashMap);
     }
 }
