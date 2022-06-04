@@ -19,12 +19,14 @@ public class CardGameAdapter extends BaseAdapter {
     Context context;
     ArrayList<Card> cards;
     LayoutInflater inflater;
+    int mainBoardHeight;
 
     Card card;
 
-    public CardGameAdapter(Context context, ArrayList<Card> cards) {
+    public CardGameAdapter(Context context, ArrayList<Card> cards, int mainBoardHeight) {
         this.context = context;
         this.cards = cards;
+        this.mainBoardHeight = mainBoardHeight;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class CardGameAdapter extends BaseAdapter {
         }
         v.setTag("IDLL"+i);
         ImageView imageView = v.findViewById(R.id.grid_cards);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, 290);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, mainBoardHeight);
         layoutParams.setMargins(30,0,30,0);
         imageView.setLayoutParams(layoutParams);
         imageView.setOnLongClickListener(new View.OnLongClickListener(){
