@@ -10,6 +10,8 @@ public class Card implements Serializable {
     private String imageUrl;
     private String rarity;
     private long price;
+    private long health;
+    private long damage;
 
     public Card(){
 
@@ -45,6 +47,22 @@ public class Card implements Serializable {
 
     public void setPrice(long price) {
         this.price = price;
+    }
+
+    public long getHealth() {
+        return health;
+    }
+
+    public void setHealth(long health) {
+        this.health = health;
+    }
+
+    public long getDamage() {
+        return damage;
+    }
+
+    public void setDamage(long damage) {
+        this.damage = damage;
     }
 
     @Override

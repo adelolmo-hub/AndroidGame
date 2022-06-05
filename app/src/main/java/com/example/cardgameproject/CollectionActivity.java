@@ -19,10 +19,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,18 +61,27 @@ public class CollectionActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Card card = cards.get(i);
                 TextView textPrice = view.findViewById(R.id.tvPrice);
+                TextView textFragments = view.findViewById(R.id.tvName);
+                ImageView imageView = view.findViewById(R.id.grid_image);
                 AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(adapterView.getContext());
                 createAccountBuilder.setTitle("Do you want to buy this card??");
                 createAccountBuilder.setMessage(textPrice.getText().toString() + "\nYour money: " + user.getBerry());
-                createAccountBuilder.setNegativeButton("", null);
+                createAccountBuilder.setNegativeButton("Cancel", null);
                 createAccountBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                        int newMoney = user.getBerry() - Integer.parseInt(textPrice.getText().toString().replaceAll("\\D+",""));
-                       HashMap<String, Object> map = new HashMap<>();
-                       map.put(card.getName(), "complete");
-                        daoUser.updateUserBuyCard(map);
-                        daoUser.updateBerry(newMoney);
+                       if(newMoney >= 0) {
+                           HashMap<String, Object> map = new HashMap<>();
+                           map.put(card.getName(), "complete");
+                           imageView.setColorFilter(null);
+                           textFragments.setText("Complete");
+                           textPrice.setText("");
+                           daoUser.updateUserBuyCard(map);
+                           daoUser.updateBerry(newMoney);
+                       }else{
+                           Toast.makeText(CollectionActivity.this, "You don't have enought money", Toast.LENGTH_SHORT).show();
+                       }
                     }
                 });
                 createAccountBuilder.show();

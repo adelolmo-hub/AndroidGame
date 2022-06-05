@@ -189,6 +189,7 @@ public class MenuActivity extends AppCompatActivity {
 
     public void onClickPlay(View view){
         Intent i = new Intent(this, GameActivity.class);
+        user = daoUser.getUser();
         i.putExtra("mainuser", user);
         startActivity(i);
     }

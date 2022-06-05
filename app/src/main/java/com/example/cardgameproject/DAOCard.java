@@ -42,10 +42,11 @@ public class DAOCard {
                     card.setName(String.valueOf(value.get("name")));
                     card.setImageUrl(String.valueOf(value.get("image")));
                     card.setPrice((Long) value.get("price"));
+                    card.setHealth((Long) value.get("Health"));
+                    card.setDamage((Long) value.get("Damage"));
 
                     listCards.add(card);
                 }
-
             }
         });
         return listCards;
