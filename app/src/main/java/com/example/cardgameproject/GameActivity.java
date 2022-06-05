@@ -110,11 +110,15 @@ public class GameActivity extends AppCompatActivity {
                                 if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
                                     cardRivalPlayerFight();
                                 } else {
-                                    rivalDropCardPlay();
+                                    if (gridRival.getChildCount() > 0) {
+                                        rivalDropCardPlay();
+                                    }else {
+                                        cardRivalPlayerFight();
+                                    }
                                 }
                                 turn = true;
                             }
-                        }, 10000);
+                        }, 3000);
                         break;
                     case DragEvent.ACTION_DRAG_ENDED:
                         break;
@@ -151,11 +155,15 @@ public class GameActivity extends AppCompatActivity {
                             if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
                                 cardRivalPlayerFight();
                             } else {
-                                rivalDropCardPlay();
+                                if (gridRival.getChildCount() > 0) {
+                                    rivalDropCardPlay();
+                                }else {
+                                    cardRivalPlayerFight();
+                                }
                             }
                             turn = true;
                         }
-                    }, 10000);
+                    }, 3000);
                 }
             }
         };
@@ -176,6 +184,19 @@ public class GameActivity extends AppCompatActivity {
                     view.setVisibility(View.GONE);
                     layoutHPRival.getChildAt(rivalCard).setVisibility(View.GONE);
                 }
+                for (int cardMain = 0; cardMain < gridBoardMain.getChildCount(); cardMain++) {
+                    if (gridBoardMain.getChildAt(cardMain) == cardToAction) {
+                        if (mainCard.getHealth() - card.getDamage() > 0) {
+                            mainCard.setHealth(mainCard.getHealth() - card.getDamage());
+                            TextView textHP = (TextView) layoutHPMain.getChildAt(cardMain);
+                            textHP.setText("HP " + mainCard.getHealth());
+                        } else {
+                            mainCard.setHealth(0);
+                            cardToAction.setVisibility(View.GONE);
+                            layoutHPMain.getChildAt(cardMain).setVisibility(View.GONE);
+                        }
+                    }
+                }
             }
         }
     }
@@ -187,12 +208,22 @@ public class GameActivity extends AppCompatActivity {
         Card mainCard = (Card) gridBoardMain.getChildAt(cardToFight).getTag();
         if(mainCard.getHealth() - card.getDamage() > 0) {
             card.setHealth(mainCard.getHealth() - card.getDamage());
-            TextView textHP = (TextView) layoutHPRival.getChildAt(cardToFight);
+            TextView textHP = (TextView) layoutHPMain.getChildAt(cardToFight);
             textHP.setText("HP " + mainCard.getHealth());
         } else {
             card.setHealth(0);
             gridBoardMain.getChildAt(cardToFight).setVisibility(View.GONE);
             layoutHPMain.getChildAt(cardToFight).setVisibility(View.GONE);
+        }
+
+        if(card.getHealth() - mainCard.getDamage() > 0) {
+            mainCard.setHealth(card.getHealth() - mainCard.getDamage());
+            TextView textHP = (TextView) layoutHPRival.getChildAt(cardRivalPlayer);
+            textHP.setText("HP " + mainCard.getHealth());
+        } else {
+            card.setHealth(0);
+            gridBoardRival.getChildAt(cardRivalPlayer).setVisibility(View.GONE);
+            layoutHPRival.getChildAt(cardRivalPlayer).setVisibility(View.GONE);
         }
 
     }
@@ -261,7 +292,7 @@ public class GameActivity extends AppCompatActivity {
         gridMainPlayer.setAdapter(cardAdapter);
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             rivalPlayerHand.add(rivalPlayerDeck.get(i));
-
+            rivalPlayerDeck.remove(i);
         }
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             ImageView cardRivalHand = new ImageView(this);
