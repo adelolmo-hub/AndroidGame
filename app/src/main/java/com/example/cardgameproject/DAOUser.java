@@ -50,6 +50,8 @@ public class DAOUser {
                         card.setPrice((Long) map.get("price"));
                         card.setRarity((String) map.get("rarity"));
                         card.setImageUrl((String) map.get("imageUrl"));
+                        card.setDamage((Long) map.get("damage"));
+                        card.setHealth((Long) map.get("health"));
                         deck.add(card);
                     }
                     user.setDeck(deck);

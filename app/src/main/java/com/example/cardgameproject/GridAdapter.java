@@ -73,6 +73,7 @@ public class GridAdapter extends BaseAdapter {
         TextView price = view.findViewById(R.id.tvPrice);
         TextView name = view.findViewById(R.id.tvName);
 
+
         card = cards.get(i);
 
         Picasso.with(context).load(card.getImageUrl()).into(imageView);
