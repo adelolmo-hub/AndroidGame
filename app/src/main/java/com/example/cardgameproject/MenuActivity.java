@@ -163,35 +163,12 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    public void ganarPartida(View view){
-        int numCard = (int) (Math.random() * (cards.size()));
-        int numFragments = (int) (Math.random() * (5 - 1)+1);
-
-        daoUser.updateCardFragments(cards.get(numCard).getName(), numFragments).addOnSuccessListener(suc -> {
-           String message = "You have been rewarded with " + numFragments + " fragments of " + cards.get(numCard).getName();
-            alertDialogReward(message);
-        }).addOnFailureListener(e -> {
-           String message = "An unknown error ocurred";
-            alertDialogReward(message);
-        });
-
-    }
-
-
-    public void alertDialogReward(String message){
-        AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
-        createAccountBuilder.setTitle("Reward");
-        createAccountBuilder.setMessage(message);
-        createAccountBuilder.setPositiveButton("Ok", null);
-
-        createAccountBuilder.show();
-    }
-
     public void onClickPlay(View view){
         Intent i = new Intent(this, GameActivity.class);
         user = daoUser.getUser();
         i.putExtra("mainuser", user);
         startActivity(i);
     }
+
 
 }

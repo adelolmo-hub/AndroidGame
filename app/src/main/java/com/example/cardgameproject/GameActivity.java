@@ -1,5 +1,6 @@
 package com.example.cardgameproject;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
@@ -48,10 +49,14 @@ public class GameActivity extends AppCompatActivity {
     private ArrayList<Card> rivalPlayerHand = new ArrayList<>();
     private View.OnClickListener selectedCardListener;
     private View.OnClickListener selectedRivalCardListener;
+    private static Card lastCardDropped;
     private ImageView cardToAction;
     private static View lastViewClick;
     private int dropedCardCount = 0;
     private User mainUser;
+    //private DAOUser daoUser;
+    private Handler handler;
+    private boolean turn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +74,9 @@ public class GameActivity extends AppCompatActivity {
         gridBoardRival.setBackgroundResource(R.drawable.board_rival);
 
         mainUser = (User) getIntent().getSerializableExtra("mainuser");
+        //daoUser = (DAOUser) getIntent().getSerializableExtra("daouser");
         mainPlayerDeck = mainUser.getDeck();
-        Handler handler = new Handler();
+        handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -79,27 +85,42 @@ public class GameActivity extends AppCompatActivity {
             }
         }, 1000);
 
+        turn = true;
 
         gridBoardMain.setOnDragListener((v, event) -> {
-            switch (event.getAction()) {
-                case DragEvent.ACTION_DRAG_STARTED:
-                    // do nothing
-                    break;
-                case DragEvent.ACTION_DRAG_ENTERED:
-                    v.setBackgroundColor(Color.argb(255, 255, 255, (float) 0.73));
-                    break;
-                case DragEvent.ACTION_DRAG_EXITED:
-                    v.setBackgroundResource(R.drawable.board_main);
-                    break;
-                case DragEvent.ACTION_DROP:
-                    v.setBackgroundResource(R.drawable.board_main);
-                    dropCard();
-                    rivalPlay();
-                    break;
-                case DragEvent.ACTION_DRAG_ENDED:
-                    break;
-                default:
-                    break;
+            if (turn) {
+                switch (event.getAction()) {
+                    case DragEvent.ACTION_DRAG_STARTED:
+                        // do nothing
+                        break;
+                    case DragEvent.ACTION_DRAG_ENTERED:
+                        v.setBackgroundColor(Color.argb(255, 255, 255, (float) 0.20));
+                        break;
+                    case DragEvent.ACTION_DRAG_EXITED:
+                        v.setBackgroundResource(R.drawable.board_main);
+                        break;
+                    case DragEvent.ACTION_DROP:
+                        v.setBackgroundResource(R.drawable.board_main);
+                        dropCard();
+                        turn = false;
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                int rivalMovement = (int) (Math.random() * 2);
+                                if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
+                                    cardRivalPlayerFight();
+                                } else {
+                                    rivalDropCardPlay();
+                                }
+                                turn = true;
+                            }
+                        }, 10000);
+                        break;
+                    case DragEvent.ACTION_DRAG_ENDED:
+                        break;
+                    default:
+                        break;
+                }
             }
             return true;
         });
@@ -120,27 +141,60 @@ public class GameActivity extends AppCompatActivity {
         selectedRivalCardListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cardFight(v);
+                if(turn) {
+                    cardMainPlayerFight(v);
+                    turn = false;
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            int rivalMovement = (int) (Math.random() * 2);
+                            if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
+                                cardRivalPlayerFight();
+                            } else {
+                                rivalDropCardPlay();
+                            }
+                            turn = true;
+                        }
+                    }, 10000);
+                }
             }
         };
 
     }
 
-    private void cardFight(View view){
-        Random coinflip = new Random();
-        int result = coinflip.nextInt(2);
-        if(result == 0){
-            view.setVisibility(View.GONE);
-            cardToAction.setBackgroundResource(0);
-        } else {
-            for(int i = 0; i < gridBoardMain.getChildCount(); i++){
-                if(gridBoardMain.getChildAt(i) == cardToAction){
-                    layoutHPMain.getChildAt(i).setVisibility(View.GONE);
+    private void cardMainPlayerFight(View view){
+        for(int rivalCard = 0; rivalCard < gridBoardRival.getChildCount(); rivalCard++){
+            if(gridBoardRival.getChildAt(rivalCard) == view){
+                Card card = (Card) view.getTag();
+                Card mainCard = (Card) cardToAction.getTag();
+                if(card.getHealth() - mainCard.getDamage() > 0) {
+                    card.setHealth(card.getHealth() - mainCard.getDamage());
+                    TextView textHP = (TextView) layoutHPRival.getChildAt(rivalCard);
+                    textHP.setText("HP " + card.getHealth());
+                } else {
+                    card.setHealth(0);
+                    view.setVisibility(View.GONE);
+                    layoutHPRival.getChildAt(rivalCard).setVisibility(View.GONE);
                 }
             }
-            cardToAction.setVisibility(View.GONE);
         }
-        Toast.makeText(this ,"Rival Win!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void cardRivalPlayerFight(){
+        int cardRivalPlayer = (int) (Math.random() * gridBoardRival.getChildCount());
+        int cardToFight = (int) (Math.random() * gridBoardMain.getChildCount());
+        Card card = (Card) gridBoardRival.getChildAt(cardRivalPlayer).getTag();
+        Card mainCard = (Card) gridBoardMain.getChildAt(cardToFight).getTag();
+        if(mainCard.getHealth() - card.getDamage() > 0) {
+            card.setHealth(mainCard.getHealth() - card.getDamage());
+            TextView textHP = (TextView) layoutHPRival.getChildAt(cardToFight);
+            textHP.setText("HP " + mainCard.getHealth());
+        } else {
+            card.setHealth(0);
+            gridBoardMain.getChildAt(cardToFight).setVisibility(View.GONE);
+            layoutHPMain.getChildAt(cardToFight).setVisibility(View.GONE);
+        }
+
     }
 
     private void dropCard() {
@@ -150,39 +204,39 @@ public class GameActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 200, gridBoardMain.getHeight() - 50, 50);
         layoutParams.setMargins(0,20,0,0);
         card.setLayoutParams(layoutParams);
-        card.setTag("IMGC" + dropedCardCount);
+        card.setTag(getLastCardDropped());
         dropedCardCount++;
         gridBoardMain.addView(card);
-        TextView hpCard = new TextView(this);
-        hpCard.setText("HP");
-        hpCard.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
-        LinearLayout.LayoutParams layoutParamsHP = new LinearLayout.LayoutParams( 200, layoutHPMain.getHeight(), 50);
-        hpCard.setLayoutParams(layoutParamsHP);
-        layoutHPMain.addView(hpCard);
+        createHealthCard(layoutHPMain, String.valueOf(getLastCardDropped().getHealth()));
+
         for (int x = 0; x < gridMainPlayer.getChildCount(); x++) {
-            if (gridMainPlayer.getChildAt(x).getTag() == getLastViewClicked().getTag()) {
+            if (gridMainPlayer.getChildAt(x) == getLastViewClicked()) {
                 mainPlayerHand.remove(x);
             }
         }
         if (mainPlayerDeck.size() > 0) {
             mainPlayerHand.add(mainPlayerDeck.get(0));
             mainPlayerDeck.remove(0);
-            CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight());
+            CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight(), (gridMainPlayer.getWidth() / 4));
             gridMainPlayer.setAdapter(cardAdapter);
         }
+        getLastViewClicked().setVisibility(View.GONE);
     }
 
-    private void rivalPlay(){
+    private void rivalDropCardPlay(){
         Random r = new Random();
         int result = r.nextInt((rivalPlayerHand.size()));
         ImageView card = new ImageView(this);
         Picasso.with(this).load(rivalPlayerHand.get(result).getImageUrl()).into(card);
         card.setOnClickListener(selectedRivalCardListener);
+        card.setTag(rivalPlayerHand.get(result));
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 200, gridBoardRival.getHeight() - 50, 50);
         layoutParams.setMargins(0,20,0,0);
         card.setLayoutParams(layoutParams);
         gridBoardRival.addView(card);
+        createHealthCard(layoutHPRival, String.valueOf(rivalPlayerHand.get(result).getHealth()));
         rivalPlayerHand.remove(result);
+
         if(rivalPlayerDeck.size() > 0) {
             rivalPlayerHand.add(rivalPlayerDeck.get(0));
             rivalPlayerDeck.remove(0);
@@ -203,7 +257,7 @@ public class GameActivity extends AppCompatActivity {
             mainPlayerDeck.remove(i);
         }
 
-        CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight());
+        CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight(), (gridMainPlayer.getWidth() / 4));
         gridMainPlayer.setAdapter(cardAdapter);
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             rivalPlayerHand.add(rivalPlayerDeck.get(i));
@@ -212,24 +266,60 @@ public class GameActivity extends AppCompatActivity {
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             ImageView cardRivalHand = new ImageView(this);
             cardRivalHand.setImageResource(R.drawable.rival_card);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 200, gridRival.getHeight());
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( (gridRival.getWidth() / 4), gridRival.getHeight());
             layoutParams.setMargins(30,0,30,0);
             cardRivalHand.setLayoutParams(layoutParams);
             gridRival.addView(cardRivalHand);
         }
     }
 
-    public static void setLastDrawableImage(Drawable cardDrawable){
+    private void createHealthCard(LinearLayout layout, String cardHP){
+        TextView hpCard = new TextView(this);
+        hpCard.setText("HP " + cardHP);
+        hpCard.setTextAlignment(TextView.TEXT_ALIGNMENT_CENTER);
+        LinearLayout.LayoutParams layoutParamsHP = new LinearLayout.LayoutParams( 200, layout.getHeight(), 50);
+        hpCard.setLayoutParams(layoutParamsHP);
+        layout.addView(hpCard);
+    }
+
+    /*public void winGame(View view){
+        int numCard = (int) (Math.random() * (mainUser.getDeck().size()));
+        int numFragments = (int) (Math.random() * (5 - 1)+1);
+
+        daoUser.updateCardFragments(mainUser.getDeck().get(numCard).getName(), numFragments).addOnSuccessListener(suc -> {
+            String message = "You have been rewarded with " + numFragments + " fragments of " + mainUser.getDeck().get(numCard).getName();
+            alertDialogReward(message);
+        }).addOnFailureListener(e -> {
+            String message = "An unknown error ocurred";
+            alertDialogReward(message);
+        });
+
+    }*/
+
+    public void alertDialogReward(String message){
+        AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
+        createAccountBuilder.setTitle("Reward");
+        createAccountBuilder.setMessage(message);
+        createAccountBuilder.setPositiveButton("Ok", null);
+
+        createAccountBuilder.show();
+    }
+
+    public static void setLastCard(Card card, Drawable cardDrawable){
+        lastCardDropped = card;
         lastImageDrawable = cardDrawable;
     }
 
-    public static Drawable getLastImageDrawable() {
+    private Drawable getLastImageDrawable() {
         return lastImageDrawable;
+    }
+    private Card getLastCardDropped(){
+        return lastCardDropped;
     }
     public static void setLastViewClicked(View layout){
         lastViewClick = layout;
     }
-    public static View getLastViewClicked(){
+    private View getLastViewClicked(){
         return lastViewClick;
     }
 }

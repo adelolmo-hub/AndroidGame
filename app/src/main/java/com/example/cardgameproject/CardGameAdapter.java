@@ -19,14 +19,16 @@ public class CardGameAdapter extends BaseAdapter {
     Context context;
     ArrayList<Card> cards;
     LayoutInflater inflater;
-    int mainBoardHeight;
+    int mainHandHeight;
+    int mainHandWidth;
 
     Card card;
 
-    public CardGameAdapter(Context context, ArrayList<Card> cards, int mainBoardHeight) {
+    public CardGameAdapter(Context context, ArrayList<Card> cards, int mainHandHeight, int mainHandWidth) {
         this.context = context;
         this.cards = cards;
-        this.mainBoardHeight = mainBoardHeight;
+        this.mainHandHeight = mainHandHeight;
+        this.mainHandWidth = mainHandWidth;
     }
 
     @Override
@@ -54,14 +56,14 @@ public class CardGameAdapter extends BaseAdapter {
         }
         v.setTag("IDLL"+i);
         ImageView imageView = v.findViewById(R.id.grid_cards);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(200, mainBoardHeight);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(mainHandWidth, mainHandHeight);
         layoutParams.setMargins(30,0,30,0);
         imageView.setLayoutParams(layoutParams);
         imageView.setOnLongClickListener(new View.OnLongClickListener(){
 
             @Override
             public boolean onLongClick(View view) {
-                GameActivity.setLastDrawableImage(imageView.getDrawable());
+                GameActivity.setLastCard(cards.get(i), imageView.getDrawable());
                 ClipData.Item item = new ClipData.Item((CharSequence) view.getTag());
                 ClipData dragData = new ClipData(
                         (CharSequence) view.getTag(),
@@ -73,7 +75,6 @@ public class CardGameAdapter extends BaseAdapter {
                         null,      // No need to use local data
                         0          // Flags (not currently used, set to 0)
                 );
-                view.setVisibility(View.GONE);
                 GameActivity.setLastViewClicked((View) imageView.getParent());
                 return false;
             }
