@@ -93,7 +93,6 @@ public class GameActivity extends AppCompatActivity {
 
         allCards = (ArrayList<Card>) getIntent().getSerializableExtra("allCards");
         mainUser = (User) getIntent().getSerializableExtra("mainuser");
-        //TODO - RECOGER DAOUSER PARA METODO WIN GAME y ANIMACIONES DE DAÑO A LAS CARTAS + CORREGIR ERROR AL SELECCIONAR LAS ULTIMAS DOS CARTAS
         daoUser = new DAOUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
         mainPlayerDeck = mainUser.getDeck();
         handler = new Handler();
@@ -307,8 +306,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void createGame(){
-        //TODO - Recoger nombre de usuario de la base de datos para añadirlo al Main Player
-        //ArrayList<Card> mainPlayerDeck = mainPlayer.getPlayerDeck();
 
         Collections.shuffle(mainPlayerDeck);
         createRivalDeck(mainPlayerDeck.size());
@@ -425,7 +422,6 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void checkPlayersDeck(){
-        //TODO - REVISAR SI LOS JUGADORES NO TIENEN CARTAS PARA FINALIZAR EL JUEGO
         if((gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0) && (gridMainPlayer.getChildCount() == 0 && gridBoardMain.getChildCount() == 0)){
             loseTieGame("You tie the Game", "Tie");
         } else if(gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0){
