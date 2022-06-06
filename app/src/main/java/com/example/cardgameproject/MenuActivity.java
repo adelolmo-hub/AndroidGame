@@ -40,7 +40,7 @@ public class MenuActivity extends AppCompatActivity {
     private int musicPosition;
     private static int RESULT_OK = -1;
     private static int RESULT_CANCELED = 0;
-    public static ArrayList<Card> cards;
+    public ArrayList<Card> cards;
     private User user;
     DAOUser daoUser;
 
@@ -167,6 +167,7 @@ public class MenuActivity extends AppCompatActivity {
         Intent i = new Intent(this, GameActivity.class);
         user = daoUser.getUser();
         i.putExtra("mainuser", user);
+        i.putExtra("allCards", cards);
         startActivity(i);
     }
 

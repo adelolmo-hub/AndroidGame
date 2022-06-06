@@ -7,6 +7,34 @@
     tools:context=".GameActivity">
 
     <LinearLayout
+        android:id="@+id/board_rival"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/space"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_hp_rival"
+        android:clipToPadding="false"
+        android:clipChildren="false"></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/board_main"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/layout_hp_main"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/space"
+        android:clipToPadding="false"
+        android:clipChildren="false">
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/layout_hp_main"
         android:layout_width="0dp"
         android:layout_height="20dp"
@@ -66,28 +94,6 @@
 
     </GridView>
 
-    <LinearLayout
-        android:id="@+id/board_rival"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/space"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_hp_rival"></LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/board_main"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/layout_hp_main"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/space">
-
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

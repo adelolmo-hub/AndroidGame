@@ -3,10 +3,17 @@ package com.example.cardgameproject;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
+import android.animation.ValueAnimator;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
@@ -16,20 +23,26 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import org.w3c.dom.Text;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -44,9 +57,10 @@ public class GameActivity extends AppCompatActivity {
     private static final int PLAYER_HAND_QTY = 3;
     private static Drawable lastImageDrawable;
     private ArrayList<Card> mainPlayerDeck = new ArrayList<>();
-    private ArrayList<Card> rivalPlayerDeck = MenuActivity.cards;
+    private ArrayList<Card> rivalPlayerDeck = new ArrayList<>();
     private ArrayList<Card> mainPlayerHand = new ArrayList<>();
     private ArrayList<Card> rivalPlayerHand = new ArrayList<>();
+    private ArrayList<Card> allCards;
     private View.OnClickListener selectedCardListener;
     private View.OnClickListener selectedRivalCardListener;
     private static Card lastCardDropped;
@@ -54,9 +68,12 @@ public class GameActivity extends AppCompatActivity {
     private static View lastViewClick;
     private int dropedCardCount = 0;
     private User mainUser;
-    //private DAOUser daoUser;
+    private DAOUser daoUser;
     private Handler handler;
     private boolean turn;
+
+    private AnimatorSet cardAttackSet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,8 +90,11 @@ public class GameActivity extends AppCompatActivity {
         gridRival.setBackgroundResource(R.drawable.hand_rival);
         gridBoardRival.setBackgroundResource(R.drawable.board_rival);
 
+
+        allCards = (ArrayList<Card>) getIntent().getSerializableExtra("allCards");
         mainUser = (User) getIntent().getSerializableExtra("mainuser");
-        //daoUser = (DAOUser) getIntent().getSerializableExtra("daouser");
+        //TODO - RECOGER DAOUSER PARA METODO WIN GAME y ANIMACIONES DE DAÑO A LAS CARTAS + CORREGIR ERROR AL SELECCIONAR LAS ULTIMAS DOS CARTAS
+        daoUser = new DAOUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
         mainPlayerDeck = mainUser.getDeck();
         handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -117,8 +137,9 @@ public class GameActivity extends AppCompatActivity {
                                     }
                                 }
                                 turn = true;
+                                checkPlayersDeck();
                             }
-                        }, 3000);
+                        }, 500);
                         break;
                     case DragEvent.ACTION_DRAG_ENDED:
                         break;
@@ -147,23 +168,25 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(turn) {
                     cardMainPlayerFight(v);
+                    checkPlayersDeck();
                     turn = false;
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             int rivalMovement = (int) (Math.random() * 2);
-                            if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
+                            if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0 && gridBoardMain.getChildCount() > 0) {
                                 cardRivalPlayerFight();
                             } else {
                                 if (gridRival.getChildCount() > 0) {
                                     rivalDropCardPlay();
-                                }else {
+                                }else if (gridBoardMain.getChildCount() > 0){
                                     cardRivalPlayerFight();
                                 }
                             }
                             turn = true;
+                            checkPlayersDeck();
                         }
-                    }, 3000);
+                    }, 500);
                 }
             }
         };
@@ -172,17 +195,19 @@ public class GameActivity extends AppCompatActivity {
 
     private void cardMainPlayerFight(View view){
         for(int rivalCard = 0; rivalCard < gridBoardRival.getChildCount(); rivalCard++){
+            int rivalCardIndex = rivalCard;
             if(gridBoardRival.getChildAt(rivalCard) == view){
                 Card card = (Card) view.getTag();
                 Card mainCard = (Card) cardToAction.getTag();
+                attackAnimation(view);
                 if(card.getHealth() - mainCard.getDamage() > 0) {
                     card.setHealth(card.getHealth() - mainCard.getDamage());
-                    TextView textHP = (TextView) layoutHPRival.getChildAt(rivalCard);
+                    TextView textHP = (TextView) layoutHPRival.getChildAt(rivalCardIndex);
                     textHP.setText("HP " + card.getHealth());
                 } else {
                     card.setHealth(0);
-                    view.setVisibility(View.GONE);
-                    layoutHPRival.getChildAt(rivalCard).setVisibility(View.GONE);
+                    gridBoardRival.removeView(view);
+                    layoutHPRival.removeViewAt(rivalCardIndex);
                 }
                 for (int cardMain = 0; cardMain < gridBoardMain.getChildCount(); cardMain++) {
                     if (gridBoardMain.getChildAt(cardMain) == cardToAction) {
@@ -190,10 +215,11 @@ public class GameActivity extends AppCompatActivity {
                             mainCard.setHealth(mainCard.getHealth() - card.getDamage());
                             TextView textHP = (TextView) layoutHPMain.getChildAt(cardMain);
                             textHP.setText("HP " + mainCard.getHealth());
+                            attackAnimation(cardToAction);
                         } else {
                             mainCard.setHealth(0);
-                            cardToAction.setVisibility(View.GONE);
-                            layoutHPMain.getChildAt(cardMain).setVisibility(View.GONE);
+                            gridBoardMain.removeView(cardToAction);
+                            layoutHPMain.removeViewAt(cardMain);
                         }
                     }
                 }
@@ -207,23 +233,25 @@ public class GameActivity extends AppCompatActivity {
         Card card = (Card) gridBoardRival.getChildAt(cardRivalPlayer).getTag();
         Card mainCard = (Card) gridBoardMain.getChildAt(cardToFight).getTag();
         if(mainCard.getHealth() - card.getDamage() > 0) {
-            card.setHealth(mainCard.getHealth() - card.getDamage());
+            mainCard.setHealth(mainCard.getHealth() - card.getDamage());
             TextView textHP = (TextView) layoutHPMain.getChildAt(cardToFight);
             textHP.setText("HP " + mainCard.getHealth());
+            attackAnimation(gridBoardMain.getChildAt(cardToFight));
         } else {
-            card.setHealth(0);
-            gridBoardMain.getChildAt(cardToFight).setVisibility(View.GONE);
-            layoutHPMain.getChildAt(cardToFight).setVisibility(View.GONE);
+            mainCard.setHealth(0);
+            gridBoardMain.removeViewAt(cardToFight);
+            layoutHPMain.removeViewAt(cardToFight);
         }
 
         if(card.getHealth() - mainCard.getDamage() > 0) {
-            mainCard.setHealth(card.getHealth() - mainCard.getDamage());
+            card.setHealth(card.getHealth() - mainCard.getDamage());
             TextView textHP = (TextView) layoutHPRival.getChildAt(cardRivalPlayer);
-            textHP.setText("HP " + mainCard.getHealth());
+            textHP.setText("HP " + card.getHealth());
+            attackAnimation(gridBoardRival.getChildAt(cardRivalPlayer));
         } else {
             card.setHealth(0);
-            gridBoardRival.getChildAt(cardRivalPlayer).setVisibility(View.GONE);
-            layoutHPRival.getChildAt(cardRivalPlayer).setVisibility(View.GONE);
+            gridBoardRival.removeViewAt(cardRivalPlayer);
+            layoutHPRival.removeViewAt(cardRivalPlayer);
         }
 
     }
@@ -236,10 +264,12 @@ public class GameActivity extends AppCompatActivity {
         layoutParams.setMargins(0,20,0,0);
         card.setLayoutParams(layoutParams);
         card.setTag(getLastCardDropped());
+
         dropedCardCount++;
         gridBoardMain.addView(card);
-        createHealthCard(layoutHPMain, String.valueOf(getLastCardDropped().getHealth()));
 
+        createHealthCard(layoutHPMain, String.valueOf(getLastCardDropped().getHealth()));
+        getLastViewClicked().setVisibility(View.GONE);
         for (int x = 0; x < gridMainPlayer.getChildCount(); x++) {
             if (gridMainPlayer.getChildAt(x) == getLastViewClicked()) {
                 mainPlayerHand.remove(x);
@@ -248,10 +278,9 @@ public class GameActivity extends AppCompatActivity {
         if (mainPlayerDeck.size() > 0) {
             mainPlayerHand.add(mainPlayerDeck.get(0));
             mainPlayerDeck.remove(0);
-            CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight(), (gridMainPlayer.getWidth() / 4));
-            gridMainPlayer.setAdapter(cardAdapter);
         }
-        getLastViewClicked().setVisibility(View.GONE);
+        CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight(), (gridMainPlayer.getWidth() / 4));
+        gridMainPlayer.setAdapter(cardAdapter);
     }
 
     private void rivalDropCardPlay(){
@@ -273,16 +302,16 @@ public class GameActivity extends AppCompatActivity {
             rivalPlayerDeck.remove(0);
         }
         if(rivalPlayerHand.size() < 3){
-            gridRival.removeView(gridRival.getChildAt(0));
+            gridRival.removeViewAt(0);
         }
     }
 
     public void createGame(){
         //TODO - Recoger nombre de usuario de la base de datos para añadirlo al Main Player
-        MainPlayer mainPlayer = new MainPlayer("Albert", 100);
         //ArrayList<Card> mainPlayerDeck = mainPlayer.getPlayerDeck();
 
         Collections.shuffle(mainPlayerDeck);
+        createRivalDeck(mainPlayerDeck.size());
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             mainPlayerHand.add(mainPlayerDeck.get(i));
             mainPlayerDeck.remove(i);
@@ -290,6 +319,7 @@ public class GameActivity extends AppCompatActivity {
 
         CardGameAdapter cardAdapter = new CardGameAdapter(this, mainPlayerHand, gridMainPlayer.getHeight(), (gridMainPlayer.getWidth() / 4));
         gridMainPlayer.setAdapter(cardAdapter);
+
         for(int i = 0; i < PLAYER_HAND_QTY; i++) {
             rivalPlayerHand.add(rivalPlayerDeck.get(i));
             rivalPlayerDeck.remove(i);
@@ -304,6 +334,13 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private void createRivalDeck(int mainPlayerDeckSize){
+        Collections.shuffle(allCards);
+        for(int i = 0; i < mainPlayerDeckSize; i++) {
+            rivalPlayerDeck.add(allCards.get(i));
+        }
+    }
+
     private void createHealthCard(LinearLayout layout, String cardHP){
         TextView hpCard = new TextView(this);
         hpCard.setText("HP " + cardHP);
@@ -313,27 +350,89 @@ public class GameActivity extends AppCompatActivity {
         layout.addView(hpCard);
     }
 
-    /*public void winGame(View view){
-        int numCard = (int) (Math.random() * (mainUser.getDeck().size()));
+    private void attackAnimation(View cardRecieveAttack){
+        ImageView v = (ImageView) cardRecieveAttack;
+        final int redColor = getResources().getColor(android.R.color.holo_red_light);
+        ValueAnimator colorAnimator = ObjectAnimator.ofFloat(0f, 1f);
+        colorAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float mul = (Float) animation.getAnimatedValue();
+                int alphaOrange = adjustAlpha(redColor, mul);
+                v.setColorFilter(alphaOrange, PorterDuff.Mode.SRC_ATOP);
+                if (mul == 0.0) {
+                    v.setColorFilter(null);
+                }
+            }
+        });
+
+        colorAnimator.setDuration(1000);
+        colorAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        colorAnimator.setRepeatCount(1);
+        colorAnimator.start();
+    }
+    public int adjustAlpha(int color, float factor) {
+        int alpha = Math.round(Color.alpha(color) * factor);
+        int red = Color.red(color);
+        int green = Color.green(color);
+        int blue = Color.blue(color);
+        return Color.argb(alpha, red, green, blue);
+    }
+
+    public void winGame(){
+        int numCard = (int) (Math.random() * (allCards.size()));
         int numFragments = (int) (Math.random() * (5 - 1)+1);
 
-        daoUser.updateCardFragments(mainUser.getDeck().get(numCard).getName(), numFragments).addOnSuccessListener(suc -> {
-            String message = "You have been rewarded with " + numFragments + " fragments of " + mainUser.getDeck().get(numCard).getName();
+        daoUser.updateCardFragments(allCards.get(numCard).getName(), numFragments).addOnSuccessListener(suc -> {
+            String message = "You have been rewarded with " + numFragments + " fragments of " + allCards.get(numCard).getName();
             alertDialogReward(message);
         }).addOnFailureListener(e -> {
             String message = "An unknown error ocurred";
             alertDialogReward(message);
         });
-
-    }*/
+    }
 
     public void alertDialogReward(String message){
         AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
-        createAccountBuilder.setTitle("Reward");
+        createAccountBuilder.setTitle("Win Reward");
         createAccountBuilder.setMessage(message);
-        createAccountBuilder.setPositiveButton("Ok", null);
+        createAccountBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
 
         createAccountBuilder.show();
+    }
+
+    public void loseTieGame(String message, String title){
+        alertDialogLose(message, title);
+    }
+
+    public void alertDialogLose(String message, String title){
+        AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
+        createAccountBuilder.setTitle(title);
+        createAccountBuilder.setMessage(message);
+        createAccountBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+
+        createAccountBuilder.show();
+    }
+
+    private void checkPlayersDeck(){
+        //TODO - REVISAR SI LOS JUGADORES NO TIENEN CARTAS PARA FINALIZAR EL JUEGO
+        if((gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0) && (gridMainPlayer.getChildCount() == 0 && gridBoardMain.getChildCount() == 0)){
+            loseTieGame("You tie the Game", "Tie");
+        } else if(gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0){
+            winGame();
+        } else if(gridMainPlayer.getChildCount() == 0 && gridBoardMain.getChildCount() == 0){
+            loseTieGame("You lose the Game", "Lose");
+        }
     }
 
     public static void setLastCard(Card card, Drawable cardDrawable){
