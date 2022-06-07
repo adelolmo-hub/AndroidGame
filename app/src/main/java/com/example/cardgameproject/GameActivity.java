@@ -183,7 +183,7 @@ public class GameActivity extends AppCompatActivity {
                                 }
                             }
                             turn = true;
-                            checkPlayersDeck();
+                            //checkPlayersDeck();
                         }
                     }, 500);
                 }
@@ -227,32 +227,33 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void cardRivalPlayerFight(){
-        int cardRivalPlayer = (int) (Math.random() * gridBoardRival.getChildCount());
-        int cardToFight = (int) (Math.random() * gridBoardMain.getChildCount());
-        Card card = (Card) gridBoardRival.getChildAt(cardRivalPlayer).getTag();
-        Card mainCard = (Card) gridBoardMain.getChildAt(cardToFight).getTag();
-        if(mainCard.getHealth() - card.getDamage() > 0) {
-            mainCard.setHealth(mainCard.getHealth() - card.getDamage());
-            TextView textHP = (TextView) layoutHPMain.getChildAt(cardToFight);
-            textHP.setText("HP " + mainCard.getHealth());
-            attackAnimation(gridBoardMain.getChildAt(cardToFight));
-        } else {
-            mainCard.setHealth(0);
-            gridBoardMain.removeViewAt(cardToFight);
-            layoutHPMain.removeViewAt(cardToFight);
-        }
+        if(gridBoardRival.getChildCount() != 0) {
+            int cardRivalPlayer = (int) (Math.random() * gridBoardRival.getChildCount());
+            int cardToFight = (int) (Math.random() * gridBoardMain.getChildCount());
+            Card card = (Card) gridBoardRival.getChildAt(cardRivalPlayer).getTag();
+            Card mainCard = (Card) gridBoardMain.getChildAt(cardToFight).getTag();
+            if (mainCard.getHealth() - card.getDamage() > 0) {
+                mainCard.setHealth(mainCard.getHealth() - card.getDamage());
+                TextView textHP = (TextView) layoutHPMain.getChildAt(cardToFight);
+                textHP.setText("HP " + mainCard.getHealth());
+                attackAnimation(gridBoardMain.getChildAt(cardToFight));
+            } else {
+                mainCard.setHealth(0);
+                gridBoardMain.removeViewAt(cardToFight);
+                layoutHPMain.removeViewAt(cardToFight);
+            }
 
-        if(card.getHealth() - mainCard.getDamage() > 0) {
-            card.setHealth(card.getHealth() - mainCard.getDamage());
-            TextView textHP = (TextView) layoutHPRival.getChildAt(cardRivalPlayer);
-            textHP.setText("HP " + card.getHealth());
-            attackAnimation(gridBoardRival.getChildAt(cardRivalPlayer));
-        } else {
-            card.setHealth(0);
-            gridBoardRival.removeViewAt(cardRivalPlayer);
-            layoutHPRival.removeViewAt(cardRivalPlayer);
+            if (card.getHealth() - mainCard.getDamage() > 0) {
+                card.setHealth(card.getHealth() - mainCard.getDamage());
+                TextView textHP = (TextView) layoutHPRival.getChildAt(cardRivalPlayer);
+                textHP.setText("HP " + card.getHealth());
+                attackAnimation(gridBoardRival.getChildAt(cardRivalPlayer));
+            } else {
+                card.setHealth(0);
+                gridBoardRival.removeViewAt(cardRivalPlayer);
+                layoutHPRival.removeViewAt(cardRivalPlayer);
+            }
         }
-
     }
 
     private void dropCard() {

@@ -5,6 +5,7 @@ import static com.example.cardgameproject.MenuActivity.musicShonenCard;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -79,6 +80,7 @@ public class CollectionActivity extends AppCompatActivity {
                            textPrice.setText("");
                            daoUser.updateUserBuyCard(map);
                            daoUser.updateBerry(newMoney);
+
                        }else{
                            Toast.makeText(CollectionActivity.this, "You don't have enought money", Toast.LENGTH_SHORT).show();
                        }

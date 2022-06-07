@@ -77,6 +77,7 @@ public class GridAdapter extends BaseAdapter {
         card = cards.get(i);
 
         Picasso.with(context).load(card.getImageUrl()).into(imageView);
+
         if(deck.contains(card)){
             imageView.setBackgroundResource(R.drawable.highlight);
         }
