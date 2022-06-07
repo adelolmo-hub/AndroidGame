@@ -6,6 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -164,8 +166,27 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void onClickPlay(View view){
+        if(user == null){
+            user = daoUser.getUser();
+        }
         if(user.getDeck().size() < 5){
-
+            AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
+            createAccountBuilder.setTitle("Deck Error");
+            createAccountBuilder.setMessage("You can't play without a deck, go to Collection to create one");
+            createAccountBuilder.setNegativeButton("Cancel", null);
+            createAccountBuilder.setPositiveButton("Go to Collection", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    user = daoUser.getUser();
+                    Intent collection = new Intent(MenuActivity.this, CollectionActivity.class);
+                    collection.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
+                    collection.putExtra("user", user);
+                    collection.putExtra("cards", cards);
+                    musicShonenCard.pause();
+                    startActivityForResult(collection, ID2);
+                }
+            });
+            createAccountBuilder.show();
         }
         Intent i = new Intent(this, GameActivity.class);
         user = daoUser.getUser();
