@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
@@ -100,8 +101,12 @@ public class GridAdapter extends BaseAdapter {
                     ImageView im = longClickListenerView.findViewById(R.id.grid_image);
                     Card cardPrueba = (Card) longClickListenerView.getTag();
                     if(deck.contains(cardPrueba)){
-                        deck.remove(cardPrueba);
-                        im.setBackgroundResource(android.R.color.transparent);
+                        if(deck.size() > 5) {
+                            deck.remove(cardPrueba);
+                            im.setBackgroundResource(android.R.color.transparent);
+                        }else{
+                            Toast.makeText(context, "You can't have less than 5 cards in your deck", Toast.LENGTH_SHORT).show();
+                        }
                     }else {
                         deck.add(cardPrueba);
                         im.setBackgroundResource(R.drawable.highlight);

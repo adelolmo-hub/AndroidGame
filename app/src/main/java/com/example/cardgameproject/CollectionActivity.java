@@ -82,7 +82,7 @@ public class CollectionActivity extends AppCompatActivity {
                            daoUser.updateBerry(newMoney);
 
                        }else{
-                           Toast.makeText(CollectionActivity.this, "You don't have enought money", Toast.LENGTH_SHORT).show();
+                           Toast.makeText(CollectionActivity.this, "You don't have enough money", Toast.LENGTH_SHORT).show();
                        }
                     }
                 });

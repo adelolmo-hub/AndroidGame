@@ -164,6 +164,9 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void onClickPlay(View view){
+        if(user.getDeck().size() < 5){
+
+        }
         Intent i = new Intent(this, GameActivity.class);
         user = daoUser.getUser();
         i.putExtra("mainuser", user);

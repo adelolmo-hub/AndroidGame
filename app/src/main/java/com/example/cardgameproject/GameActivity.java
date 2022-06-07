@@ -94,6 +94,7 @@ public class GameActivity extends AppCompatActivity {
         allCards = (ArrayList<Card>) getIntent().getSerializableExtra("allCards");
         mainUser = (User) getIntent().getSerializableExtra("mainuser");
         daoUser = new DAOUser(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        daoUser.addListener();
         mainPlayerDeck = mainUser.getDeck();
         handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -167,7 +168,7 @@ public class GameActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(turn) {
                     cardMainPlayerFight(v);
-                    checkPlayersDeck();
+                    //checkPlayersDeck();
                     turn = false;
                     handler.postDelayed(new Runnable() {
                         @Override
@@ -183,7 +184,7 @@ public class GameActivity extends AppCompatActivity {
                                 }
                             }
                             turn = true;
-                            //checkPlayersDeck();
+                            checkPlayersDeck();
                         }
                     }, 500);
                 }
