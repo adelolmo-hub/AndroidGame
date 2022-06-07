@@ -5,28 +5,16 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.ContactsContract;
 import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -35,17 +23,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
-
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GameActivity extends AppCompatActivity {
     private GridView gridMainPlayer;
@@ -90,6 +70,8 @@ public class GameActivity extends AppCompatActivity {
         gridRival.setBackgroundResource(R.drawable.hand_rival);
         gridBoardRival.setBackgroundResource(R.drawable.board_rival);
 
+        layoutHPRival.setBackgroundResource(R.color.black);
+        layoutHPMain.setBackgroundResource(R.color.black);
 
         allCards = (ArrayList<Card>) getIntent().getSerializableExtra("allCards");
         mainUser = (User) getIntent().getSerializableExtra("mainuser");
@@ -110,38 +92,23 @@ public class GameActivity extends AppCompatActivity {
         gridBoardMain.setOnDragListener((v, event) -> {
             if (turn) {
                 switch (event.getAction()) {
-                    case DragEvent.ACTION_DRAG_STARTED:
-                        // do nothing
-                        break;
                     case DragEvent.ACTION_DRAG_ENTERED:
-                        v.setBackgroundColor(Color.argb(255, 255, 255, (float) 0.20));
+                        PorterDuffColorFilter greyFilter = new PorterDuffColorFilter(Color.argb(255, 255, 255, (float) 255), PorterDuff.Mode.MULTIPLY);
+                        v.getBackground().setColorFilter(greyFilter);
                         break;
                     case DragEvent.ACTION_DRAG_EXITED:
-                        v.setBackgroundResource(R.drawable.board_main);
+                        v.getBackground().setColorFilter(null);
                         break;
                     case DragEvent.ACTION_DROP:
-                        v.setBackgroundResource(R.drawable.board_main);
+                        v.getBackground().setColorFilter(null);
                         dropCard();
                         turn = false;
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                int rivalMovement = (int) (Math.random() * 2);
-                                if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0) {
-                                    cardRivalPlayerFight();
-                                } else {
-                                    if (gridRival.getChildCount() > 0) {
-                                        rivalDropCardPlay();
-                                    }else {
-                                        cardRivalPlayerFight();
-                                    }
-                                }
-                                turn = true;
-                                checkPlayersDeck();
+                                rivalPlay();
                             }
-                        }, 500);
-                        break;
-                    case DragEvent.ACTION_DRAG_ENDED:
+                        }, 2000);
                         break;
                     default:
                         break;
@@ -173,24 +140,41 @@ public class GameActivity extends AppCompatActivity {
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            int rivalMovement = (int) (Math.random() * 2);
-                            if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0 && gridBoardMain.getChildCount() > 0) {
-                                cardRivalPlayerFight();
-                            } else {
-                                if (gridRival.getChildCount() > 0) {
-                                    rivalDropCardPlay();
-                                }else if (gridBoardMain.getChildCount() > 0){
-                                    cardRivalPlayerFight();
-                                }
-                            }
-                            turn = true;
-                            checkPlayersDeck();
+                            rivalPlay();
                         }
-                    }, 500);
+                    }, 2000);
                 }
             }
         };
 
+    }
+
+    private void rivalPlay(){
+        boolean gameFinished = rivalPlayAction();
+        if(turn && gridBoardRival.getChildCount() == 0 && gridMainPlayer.getChildCount() == 0 && !gameFinished){
+            Toast.makeText(this, "You can't move, turn skipped!", Toast.LENGTH_SHORT).show();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    rivalPlay();
+                }
+            }, 2000);
+        }
+    }
+
+    private boolean rivalPlayAction(){
+        int rivalMovement = (int) (Math.random() * 2);
+        if (rivalMovement == 1 && gridBoardRival.getChildCount() > 0 && gridBoardMain.getChildCount() > 0) {
+            cardRivalPlayerFight();
+        } else {
+            if (gridRival.getChildCount() > 0) {
+                rivalDropCardPlay();
+            }else if (gridBoardMain.getChildCount() > 0){
+                cardRivalPlayerFight();
+            }
+        }
+        turn = true;
+        return checkPlayersDeck();
     }
 
     private void cardMainPlayerFight(View view){
@@ -327,7 +311,7 @@ public class GameActivity extends AppCompatActivity {
             ImageView cardRivalHand = new ImageView(this);
             cardRivalHand.setImageResource(R.drawable.rival_card);
             LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( (gridRival.getWidth() / 4), gridRival.getHeight());
-            layoutParams.setMargins(30,0,30,0);
+            layoutParams.setMargins(((gridRival.getWidth() / 4) /6),0,((gridRival.getWidth() / 4) /6),0);
             cardRivalHand.setLayoutParams(layoutParams);
             gridRival.addView(cardRivalHand);
         }
@@ -423,14 +407,18 @@ public class GameActivity extends AppCompatActivity {
         createAccountBuilder.show();
     }
 
-    private void checkPlayersDeck(){
+    private boolean checkPlayersDeck(){
         if((gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0) && (gridMainPlayer.getChildCount() == 0 && gridBoardMain.getChildCount() == 0)){
             loseTieGame("You tie the Game", "Tie");
+            return true;
         } else if(gridRival.getChildCount() == 0 && gridBoardRival.getChildCount() == 0){
             winGame();
+            return true;
         } else if(gridMainPlayer.getChildCount() == 0 && gridBoardMain.getChildCount() == 0){
             loseTieGame("You lose the Game", "Lose");
+            return true;
         }
+        return false;
     }
 
     public static void setLastCard(Card card, Drawable cardDrawable){

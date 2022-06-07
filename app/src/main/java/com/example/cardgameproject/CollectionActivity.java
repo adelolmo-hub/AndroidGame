@@ -5,13 +5,11 @@ import static com.example.cardgameproject.MenuActivity.musicShonenCard;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.content.SharedPreferences;
-import android.media.Image;
 import android.media.MediaPlayer;
 
 import android.os.Bundle;
@@ -23,10 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -57,7 +57,7 @@ public class CardGameAdapter extends BaseAdapter {
         v.setTag("IDLL"+i);
         ImageView imageView = v.findViewById(R.id.grid_cards);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(mainHandWidth, mainHandHeight);
-        layoutParams.setMargins(30,0,30,0);
+        layoutParams.setMargins(mainHandWidth / 6,0,mainHandWidth / 6,0);
         imageView.setLayoutParams(layoutParams);
         imageView.setOnLongClickListener(new View.OnLongClickListener(){
 
