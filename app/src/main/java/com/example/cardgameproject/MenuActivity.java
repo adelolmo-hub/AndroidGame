@@ -170,12 +170,13 @@ public class MenuActivity extends AppCompatActivity {
                 }
             });
             createAccountBuilder.show();
+        }else {
+            Intent i = new Intent(this, GameActivity.class);
+            user = daoUser.getUser();
+            i.putExtra("mainuser", user);
+            i.putExtra("allCards", cards);
+            startActivity(i);
         }
-        Intent i = new Intent(this, GameActivity.class);
-        user = daoUser.getUser();
-        i.putExtra("mainuser", user);
-        i.putExtra("allCards", cards);
-        startActivity(i);
     }
 
 

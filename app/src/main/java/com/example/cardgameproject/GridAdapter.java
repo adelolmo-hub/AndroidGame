@@ -73,16 +73,18 @@ public class GridAdapter extends BaseAdapter {
         TextView price = view.findViewById(R.id.tvPrice);
         TextView name = view.findViewById(R.id.tvName);
 
-
         card = cards.get(i);
+        imageView.setTag(card);
 
         Picasso.with(context).load(card.getImageUrl()).into(imageView);
 
-        if(deck.contains(card)){
+        if(deck.contains((Card) imageView.getTag())){
             imageView.setBackgroundResource(R.drawable.highlight);
+        }else{
+            imageView.setBackgroundResource(0);
         }
 
-        imageView.setTag(card);
+
         if(!"complete".equals(fragments)){
             imageView.setColorFilter(colorFilter);
             if(fragments == null){
@@ -96,6 +98,7 @@ public class GridAdapter extends BaseAdapter {
         }else{
             imageView.setColorFilter(null);
             name.setText("Complete");
+            price.setText("");
             imageView.setOnLongClickListener(longClickListenerView -> {
                     ImageView im = longClickListenerView.findViewById(R.id.grid_image);
                     Card cardPrueba = (Card) longClickListenerView.getTag();
@@ -106,7 +109,7 @@ public class GridAdapter extends BaseAdapter {
                         }else{
                             Toast.makeText(context, "You can't have less than 5 cards in your deck", Toast.LENGTH_SHORT).show();
                         }
-                    }else {
+                    }else{
                         deck.add(cardPrueba);
                         im.setBackgroundResource(R.drawable.highlight);
                     }

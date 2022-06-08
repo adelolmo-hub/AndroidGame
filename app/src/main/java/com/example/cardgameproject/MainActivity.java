@@ -135,10 +135,11 @@ public class MainActivity extends AppCompatActivity {
         card.setHealth(3);
 
         obtainedFragments.put("Luffy", "complete");
-        obtainedFragments.put("Eren", "complete");
+        obtainedFragments.put("Eren Jaeger", "complete");
         obtainedFragments.put("Midoriya Izuku","complete");
         obtainedFragments.put("Escanor", "complete");
         obtainedFragments.put("Giyu Tomioka", "complete");
+        obtainedFragments.put("Yamcha", "complete");
 
 
         user.setObtainedFragments(obtainedFragments);
