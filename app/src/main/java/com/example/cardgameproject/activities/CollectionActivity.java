@@ -1,6 +1,6 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.activities;
 
-import static com.example.cardgameproject.MenuActivity.musicShonenCard;
+import static com.example.cardgameproject.activities.MenuActivity.musicShonenCard;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +20,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cardgameproject.adapters.GridAdapter;
+import com.example.cardgameproject.R;
 import com.example.cardgameproject.databinding.ActivityCollectionBinding;
+import com.example.cardgameproject.models.Card;
+import com.example.cardgameproject.models.DAOUser;
+import com.example.cardgameproject.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;

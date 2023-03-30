@@ -1,4 +1,4 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.adapters;
 
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -10,6 +10,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.example.cardgameproject.R;
+import com.example.cardgameproject.activities.GameActivity;
+import com.example.cardgameproject.models.Card;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

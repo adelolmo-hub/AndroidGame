@@ -11,16 +11,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Design.NoActionBar">
 
-        <activity android:name=".GameActivity"
+        <activity android:name=".activities.GameActivity"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".SettingsActivity"
+        <activity android:name=".activities.SettingsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".CollectionActivity"
+        <activity android:name=".activities.CollectionActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".MenuActivity"
+        <activity android:name=".activities.MenuActivity"
             android:screenOrientation="portrait"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

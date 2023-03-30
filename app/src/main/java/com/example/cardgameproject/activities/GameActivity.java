@@ -1,4 +1,4 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cardgameproject.adapters.CardGameAdapter;
+import com.example.cardgameproject.R;
+import com.example.cardgameproject.models.Card;
+import com.example.cardgameproject.models.DAOUser;
+import com.example.cardgameproject.models.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.models;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-  package com.example.cardgameproject;
+  package com.example.cardgameproject.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +16,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.example.cardgameproject.R;
 
 import org.w3c.dom.Text;
 

@@ -1,4 +1,4 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.adapters;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

@@ -1,9 +1,16 @@
-package com.example.cardgameproject;
+package com.example.cardgameproject.models;
 
 
 import java.io.Serializable;
 import java.util.Objects;
 
+
+/*
+ * The Card class represents a card in a trading card game.
+ * It contains information about the card's name, image, rarity, price, health, and damage.
+ * The class implements the Serializable interface for serialization purposes.
+ * TODO - Serializable puede que no sea necesario y se pueda retirar
+ */
 public class Card implements Serializable {
 
     private String name;
