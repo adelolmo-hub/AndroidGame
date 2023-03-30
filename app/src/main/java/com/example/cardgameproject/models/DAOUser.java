@@ -15,45 +15,65 @@ import com.google.firebase.database.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-
+/*
+ *
+ * The DAOUser class represents a Data Access Object for the User object.
+ * It provides methods for inserting, updating, and retrieving user data from a Firebase Realtime Database.
+ *
+ * */
 public class DAOUser {
 
+    //Firebase
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
+    //Firebase URL constant
     private final String URL = "https://cardgame-15ba2-default-rtdb.europe-west1.firebasedatabase.app";
     private User user;
 
-    public DAOUser(String id){
+    /*
+     * Constructs a DAOUser object with the given user ID.
+     * @param id the ID of the user.
+     *
+     */
+    public DAOUser(String id) {
         firebaseDatabase = FirebaseDatabase.getInstance(URL);
         databaseReference = firebaseDatabase.getReference().child("User").child(id);
         this.user = User.getInstance();
     }
 
-    public void insertUser(User user){
+    /*
+     * Inserts a user object into the Firebase Realtime Database.
+     * @param user the user object to insert.
+     */
+    public void insertUser(User user) {
         databaseReference.setValue(user);
     }
 
-    public void addListener(){
+    /*
+     * Adds a ValueEventListener to the Firebase Realtime Database to listen for changes in the user's data.
+     * Updates the user object with the new data if a change occurs.
+     */
+    public void addListener() {
 
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
-                    user.setUserName(snapshot.child("userName").getValue(String.class));
-                    user.setEmail(snapshot.child("email").getValue(String.class));
-                    user.setBerry(snapshot.child("berry").getValue(Integer.class));
-                    user.setObtainedFragments((HashMap<String, String>) snapshot.child("obtainedFragments").getValue());
-                    ArrayList<Card> deck = new ArrayList<>();
-                    for(HashMap<String, Object> map : (ArrayList<HashMap>)snapshot.child("deck").getValue()){
-                        Card card = new Card();
-                        card.setName((String) map.get("name"));
-                        card.setPrice((Long) map.get("price"));
-                        card.setRarity((String) map.get("rarity"));
-                        card.setImageUrl((String) map.get("imageUrl"));
-                        card.setDamage((Long) map.get("damage"));
-                        card.setHealth((Long) map.get("health"));
-                        deck.add(card);
-                    }
-                    user.setDeck(deck);
+                user.setUserName(snapshot.child("userName").getValue(String.class));
+                user.setEmail(snapshot.child("email").getValue(String.class));
+                user.setBerry(snapshot.child("berry").getValue(Integer.class));
+                user.setObtainedFragments((HashMap<String, String>) snapshot.child("obtainedFragments").getValue());
+                ArrayList<Card> deck = new ArrayList<>();
+                for (HashMap<String, Object> map : (ArrayList<HashMap>) snapshot.child("deck").getValue()) {
+                    Card card = new Card();
+                    card.setName((String) map.get("name"));
+                    card.setPrice((Long) map.get("price"));
+                    card.setRarity((String) map.get("rarity"));
+                    card.setImageUrl((String) map.get("imageUrl"));
+                    card.setDamage((Long) map.get("damage"));
+                    card.setHealth((Long) map.get("health"));
+                    deck.add(card);
+                }
+                user.setDeck(deck);
             }
 
             @Override
@@ -63,18 +83,31 @@ public class DAOUser {
         });
     }
 
-    public Task<Void> updateBerry(int berry){
+
+    /*
+     * Updates the user's berry count in the Firebase Realtime Database.
+     * @param berry the amount of berries to add to the user's current berry count.
+     * @return a Task object representing the status of the update operation.
+     */
+    public Task<Void> updateBerry(int berry) {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("berry", user.getBerry() + berry);
         return databaseReference.updateChildren(hashMap);
     }
 
-    public Task<Void> updateCardFragments(String cardName, int fragments){
+    /*
+     * Updates the number of fragments the user has for a specific card in the Firebase Realtime Database.
+     * If the user obtains enough fragments to complete a card, it updates the user's berry count as well.
+     * @param cardName the name of the card.
+     * @param fragments the number of fragments obtained.
+     * @return a Task object representing the status of the update operation.
+     */
+    public Task<Void> updateCardFragments(String cardName, int fragments) {
         HashMap<String, Object> hashMap = new HashMap<>();
-        if(user.getObtainedFragments() == null){
+        if (user.getObtainedFragments() == null) {
             user.setObtainedFragments(new HashMap<>());
         }
-        if(!TextUtils.isEmpty(user.getObtainedFragments().get(cardName))) {
+        if (!TextUtils.isEmpty(user.getObtainedFragments().get(cardName))) {
             if ("complete".equals(user.getObtainedFragments().get(cardName))) {
                 updateBerry(fragments * 10);
             } else {
@@ -85,18 +118,18 @@ public class DAOUser {
                     hashMap.put(cardName, String.valueOf(currentFragments + fragments));
                 }
             }
-        }else{
+        } else {
             hashMap.put(cardName, String.valueOf(fragments));
         }
         return databaseReference.child("obtainedFragments").updateChildren(hashMap);
     }
 
 
-    public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap){
+    public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap) {
         return databaseReference.child("obtainedFragments").updateChildren(hashMap);
     }
 
-    public Task<Void> updateUserDeck(ArrayList<Card> deck){
+    public Task<Void> updateUserDeck(ArrayList<Card> deck) {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("deck", deck);
         return databaseReference.updateChildren(hashMap);

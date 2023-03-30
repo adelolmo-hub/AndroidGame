@@ -4,6 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
+ * The User class represents a card in a trading card game.
+ * It contains information about the User name, email, berries(money), obtained fragments and deck
+ * The class implements the Serializable interface for serialization purposes.
+ * This class is Singleton
+ * TODO - Serializable puede que no sea necesario y se pueda retirar
+ */
 public class User implements Serializable {
 
     private String userName;
@@ -13,13 +20,19 @@ public class User implements Serializable {
     private ArrayList<Card> deck;
     private static User user;
 
-    private User(){
+
+    //Private constructor to ensure that no instance of the User class can be created from outside the class.
+    private User() {
 
     }
 
-
-    public static User getInstance(){
-        if(user==null){
+    /*
+     * Returns the singleton instance of the User class.
+     * If the instance does not exist, it creates one and returns it.
+     * @return The singleton instance of the User class.
+     */
+    public static User getInstance() {
+        if (user == null) {
             user = new User();
         }
         return user;
