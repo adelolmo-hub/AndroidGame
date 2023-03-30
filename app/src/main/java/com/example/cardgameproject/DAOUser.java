@@ -26,7 +26,7 @@ public class DAOUser {
     public DAOUser(String id){
         firebaseDatabase = FirebaseDatabase.getInstance(URL);
         databaseReference = firebaseDatabase.getReference().child("User").child(id);
-        this.user = new User();
+        this.user = User.getInstance();
     }
 
     public void insertUser(User user){
@@ -91,9 +91,6 @@ public class DAOUser {
         return databaseReference.child("obtainedFragments").updateChildren(hashMap);
     }
 
-    public User getUser(){
-        return user;
-    }
 
     public Task<Void> updateUserBuyCard(HashMap<String, Object> hashMap){
         return databaseReference.child("obtainedFragments").updateChildren(hashMap);

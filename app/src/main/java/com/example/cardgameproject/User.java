@@ -13,15 +13,18 @@ public class User implements Serializable {
     private int berry;
     private HashMap<String, String> obtainedFragments;
     private ArrayList<Card> deck;
+    private static User user;
 
-
-    public User(){
+    private User(){
 
     }
 
-    public User(String userName, String email) {
-        this.userName = userName;
-        this.email = email;
+
+    public static User getInstance(){
+        if(user==null){
+            user = new User();
+        }
+        return user;
     }
 
     public String getUserName() {

@@ -40,6 +40,7 @@ public class MenuActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         daoUser = new DAOUser(firebaseAuth.getCurrentUser().getUid());
         daoUser.addListener();
+        user = User.getInstance();
         if(cards == null) {
             cards = dao.getCard();
         }
@@ -65,12 +66,10 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void collectionActivity(View view){
-        user = daoUser.getUser();
         Intent i = new Intent(this, CollectionActivity.class);
         i.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
-        i.putExtra("user", user);
-        i.putExtra("cards", cards);
         musicShonenCard.pause();
+        i.putExtra("cards", cards);
         startActivityForResult(i, ID2);
     }
 
@@ -149,9 +148,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void onClickPlay(View view){
-        if(user == null){
-            user = daoUser.getUser();
-        }
         if(user.getDeck().size() < 5){
             AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
             createAccountBuilder.setTitle("Deck Error");
@@ -160,11 +156,8 @@ public class MenuActivity extends AppCompatActivity {
             createAccountBuilder.setPositiveButton("Go to Collection", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    user = daoUser.getUser();
                     Intent collection = new Intent(MenuActivity.this, CollectionActivity.class);
                     collection.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
-                    collection.putExtra("user", user);
-                    collection.putExtra("cards", cards);
                     musicShonenCard.pause();
                     startActivityForResult(collection, ID2);
                 }
@@ -172,7 +165,6 @@ public class MenuActivity extends AppCompatActivity {
             createAccountBuilder.show();
         }else {
             Intent i = new Intent(this, GameActivity.class);
-            user = daoUser.getUser();
             i.putExtra("mainuser", user);
             i.putExtra("allCards", cards);
             startActivity(i);

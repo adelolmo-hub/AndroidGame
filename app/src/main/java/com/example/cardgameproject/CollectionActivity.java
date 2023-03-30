@@ -33,6 +33,7 @@ public class CollectionActivity extends AppCompatActivity {
     private SharedPreferences spShonenCard;
     public static ArrayList<Card> cards;
     DAOUser daoUser;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +43,12 @@ public class CollectionActivity extends AppCompatActivity {
 
         musicMainThemeColl();
 
+        user = User.getInstance();
+
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         daoUser = new DAOUser(firebaseAuth.getCurrentUser().getUid());
 
         cards = (ArrayList<Card>) getIntent().getSerializableExtra("cards");
-        User user = (User) getIntent().getSerializableExtra("user");
 
 
         GridAdapter gridAdapter = new GridAdapter(this, cards, user);

@@ -122,7 +122,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addCardsToDeck(String mail, String username) {
-        User user = new User(username, mail);
+        User user = User.getInstance();
+        user.setEmail(mail);
+        user.setUserName(username);
         HashMap<String, String> obtainedFragments = new HashMap<>();
         ArrayList<Card> deck = new ArrayList<>();
         Card card = new Card();
