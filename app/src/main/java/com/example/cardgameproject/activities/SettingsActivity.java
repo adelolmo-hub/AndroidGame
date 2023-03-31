@@ -1,4 +1,4 @@
-  package com.example.cardgameproject.activities;
+package com.example.cardgameproject.activities;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +21,10 @@ import com.example.cardgameproject.R;
 
 import org.w3c.dom.Text;
 
+/**
+ * This class represents the settings activity of the application.
+ * It allows users to modify their account password, turn on/off background music, and view application information.
+ */
 public class SettingsActivity extends AppCompatActivity {
     private TextView changePass;
     private TextView infoProject;
@@ -30,30 +34,37 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static MediaPlayer musicShonenCard = new MediaPlayer();
 
+
+    /**
+     * ON CREATE
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        //ID
         musicCh = findViewById(R.id.cb_music);
         changePass = findViewById(R.id.tv_changePass);
         infoProject = findViewById(R.id.tv_info_project);
 
+        //Shared Preference
         spShonenCard = getSharedPreferences("shonenCardPreference", Context.MODE_PRIVATE);
 
         changePass.setClickable(true);
         infoProject.setClickable(true);
         musicCh.setChecked(spShonenCard.getBoolean("music", true));
 
+        //Get extras
         Bundle bundle = getIntent().getExtras();
         musicShonenCard = MediaPlayer.create(this, R.raw.main_theme);
-        if(musicCh.isChecked()) {
+        if (musicCh.isChecked()) {
             if (bundle.getInt("mediaPlayerTimePos") > 0) {
                 musicShonenCard.seekTo(bundle.getInt("mediaPlayerTimePos"));
             }
             musicShonenCard.start();
             musicShonenCard.setLooping(true);
         }
-
 
         editorSC = spShonenCard.edit();
         editorSC.putBoolean("music", musicCh.isChecked());
@@ -66,16 +77,25 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    public void onCheckMusic(View view){
-        if(musicCh.isChecked()){
+    /**
+     * This method is called when the user clicks the CheckBox to turn on/off background music.
+     * It starts or pauses the MediaPlayer accordingly and updates user preferences.
+     */
+    public void onCheckMusic(View view) {
+        if (musicCh.isChecked()) {
             musicShonenCard.start();
-        } else{
+        } else {
             musicShonenCard.pause();
         }
         editorSC.putBoolean("music", musicCh.isChecked());
     }
 
-    public void onClickBack(View view){
+
+    /**
+     * This method is called when the user clicks the "Back" button.
+     * It returns the result to the previous activity and updates user preferences.
+     */
+    public void onClickBack(View view) {
         Intent back = getIntent();
         setResult(RESULT_OK, back);
         back.putExtra("mediaPlayerTimePos", musicShonenCard.getCurrentPosition());
@@ -85,7 +105,12 @@ public class SettingsActivity extends AppCompatActivity {
         finish();
     }
 
-    private void showAlertChangePass(){
+
+    /**
+     * This method shows a dialog to allow users to change their account password.
+     * It validates user input and updates the password in the database.
+     */
+    private void showAlertChangePass() {
 
         AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
         createAccountBuilder.setTitle("Change Password");
@@ -121,11 +146,11 @@ public class SettingsActivity extends AppCompatActivity {
                 boolean passwordEmpty = isEmpty(passwordCreate, getString(R.string.passwordEmpty));
                 boolean passwordValidationEmpty = isEmpty(passwordValidation, getString(R.string.passwordEmpty));
 
-                if(!passwordEmpty && !passwordValidationEmpty){
+                if (!passwordEmpty && !passwordValidationEmpty) {
                     if (passwordCreate.getText().toString().equals(passwordValidation.getText().toString())) {
                         //TODO - CHANGE DATABASE PASSWORD
 
-                    }else {
+                    } else {
                         passwordValidation.setError("Password doesn't match, try again");
                     }
                 }
@@ -135,7 +160,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-    public void showAlertInfo(View view){
+    /**
+     * This method shows a dialog with the developers info.
+     */
+    public void showAlertInfo(View view) {
 
         AlertDialog.Builder createInfoBuilder = new AlertDialog.Builder(this);
         //Set a Layout
@@ -156,6 +184,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * This method checks if the editText is empty.
+     * Shows a message if true.
+     */
     private boolean isEmpty(EditText editText, String errorMsg) {
         boolean empty = TextUtils.isEmpty(editText.getText());
         if (empty) {
@@ -164,13 +196,20 @@ public class SettingsActivity extends AppCompatActivity {
         return empty;
     }
 
+    /**
+     * This method pauses the music.
+     */
     protected void onPause() {
         super.onPause();
         musicShonenCard.pause();
     }
+
+    /**
+     * This method resumes the music.
+     */
     protected void onResume() {
         super.onResume();
-        if(musicCh.isChecked()){
+        if (musicCh.isChecked()) {
             if (!musicShonenCard.isPlaying()) {
                 musicShonenCard.start();
             }
