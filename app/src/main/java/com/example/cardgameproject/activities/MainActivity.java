@@ -35,34 +35,46 @@ public class MainActivity extends AppCompatActivity {
     EditText etMail, etPassword;
     DAOUser dao;
 
+
+    /**
+     * ONCREATE
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main); // Set layout for the activity
 
+        // EditTexts ID
         etMail = findViewById(R.id.etUserMail);
         etPassword = findViewById(R.id.etPassword);
 
+        // Get the current user from Firebase Authentication
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser fbUser = firebaseAuth.getCurrentUser();
 
+        // If there is a current user, go to the main menu activity
         if(fbUser!= null){
             goToMenu();
         }
-
     }
 
+    /**
+     * Method to create an alert dialog for user account creation
+     * @param view Current view
+     */
     public void alertDialogCreateAccount(View view){
         AlertDialog.Builder createAccountBuilder = new AlertDialog.Builder(this);
         createAccountBuilder.setTitle("Create Account");
 
+        // Set positive and negative buttons for the dialog
         createAccountBuilder.setPositiveButton("Ok", null);
         createAccountBuilder.setNegativeButton("Close", null);
-        //Set a Layout
+
+        // Create a LinearLayout to set a custom layout for the dialog
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
-        // Set an EditText view to get user input
+        // Set EditText views for user input of username, email, and password
         final EditText userNameCreate = new EditText(this);
         userNameCreate.setHint("UserName");
         final EditText userCreate = new EditText(this);
@@ -72,29 +84,35 @@ public class MainActivity extends AppCompatActivity {
         final EditText passwordValidation = new EditText(this);
         passwordValidation.setHint("Repeat your password");
 
+        // Set input types for password fields to hide input
         passwordCreate.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         passwordValidation.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
+        // Add EditText views to the layout
         layout.addView(userNameCreate);
         layout.addView(userCreate);
         layout.addView(passwordCreate);
         layout.addView(passwordValidation);
 
+        // Set the custom layout for the dialog
         createAccountBuilder.setView(layout);
 
+        // Create and show the dialog
         final AlertDialog dialogCreateAccount = createAccountBuilder.create();
         dialogCreateAccount.setOnShowListener(dialog -> {
             Button button = dialogCreateAccount.getButton(AlertDialog.BUTTON_POSITIVE);
             button.setOnClickListener(v -> {
+                // Check if input fields are empty
                 boolean usernameEmpty = isEmpty(userNameCreate, "Username can't be empty");
                 boolean userEmpty = isEmpty(userCreate,getString(R.string.userEmpty));
                 boolean passwordEmpty = isEmpty(passwordCreate, getString(R.string.passwordEmpty));
                 boolean passwordValidationEmpty = isEmpty(passwordValidation, getString(R.string.passwordEmpty));
 
                 if(!userEmpty && !passwordEmpty && !passwordValidationEmpty && !usernameEmpty){
+                    // Check if passwords match
                     if (passwordCreate.getText().toString().equals(passwordValidation.getText().toString())) {
+                        // Create user account with Firebase Authentication
                         createAccount(userCreate.getText().toString(), passwordCreate.getText().toString(), userNameCreate.getText().toString());
-
                     }else {
                         passwordValidation.setError("Password doesn't match, try again");
                     }
@@ -105,26 +123,43 @@ public class MainActivity extends AppCompatActivity {
         dialogCreateAccount.show();
     }
 
+    /**
+    * This method creates an account using the email, password, and username provided
+    * It uses Firebase Authentication to create a new user and logs them in upon successful account creation
+    * If there is an error, it displays a toast with the error message
+    * @param mail The email address of the user
+    * @param password The password the user wants to use for their account
+    * @param username The username the user wants to use for their account
+    */
     private void createAccount(String mail, String password, String username) {
         firebaseAuth.createUserWithEmailAndPassword(mail, password).addOnCompleteListener(task -> {
-            if(task.isSuccessful()){
+            if (task.isSuccessful()) {
                 addCardsToDeck(mail, username);
-                Toast.makeText(MainActivity.this, "Cuenta creada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Account created", Toast.LENGTH_SHORT).show();
                 firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(task1 -> {
-                    if(task1.isSuccessful()){
+                    if (task1.isSuccessful()) {
                         goToMenu();
-                    }else{
+                    } else {
                         String errorCode = ((FirebaseAuthException) task1.getException()).getErrorCode();
-                        dameToastdeerror(errorCode);
+                        showErrorToast(errorCode);
                     }
                 });
-            }else{
+            } else {
                 String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
-                dameToastdeerror(errorCode);
+                showErrorToast(errorCode);
             }
         });
     }
 
+
+    /**
+     * This method adds cards to the user's deck by creating a new User object
+     * and populating it with user data and a card object.
+     * It then inserts this object into the Firebase Realtime Database using DAOUser.
+     * @param mail The email address of the user
+     * @param username The username of the user
+     */
+    //TODO - Investigar si se puede añadir directamente desde FireBase
     private void addCardsToDeck(String mail, String username) {
         User user = User.getInstance();
         user.setEmail(mail);
@@ -147,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
         obtainedFragments.put("Giyu Tomioka", "complete");
         obtainedFragments.put("Yamcha", "complete");
 
-
         user.setObtainedFragments(obtainedFragments);
         deck.add(card);
         user.setDeck(deck);
@@ -155,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
         dao.insertUser(Objects.requireNonNull(user));
     }
 
+
+    /**
+     * This method logs the user in using the email and password provided
+     * It uses Firebase Authentication to log the user in and opens the menu upon succesful login
+     * If there is an error, it displays a toast with the error message
+     * @param view Current view
+     */
     public void logIn(View view){
         boolean userEmpty = isEmpty(etMail,getString(R.string.userEmpty));
         boolean passwordEmpty = isEmpty(etPassword, getString(R.string.passwordEmpty));
@@ -162,26 +203,34 @@ public class MainActivity extends AppCompatActivity {
         String mail = etMail.getText().toString();
         String password = etPassword.getText().toString();
 
+        //Check if input fields are empty
         if(!userEmpty && !passwordEmpty){
-            firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if(task.isSuccessful()){
-                        goToMenu();
-                    }else{
-                        String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
-                        dameToastdeerror(errorCode);
-                    }
+            firebaseAuth.signInWithEmailAndPassword(mail, password).addOnCompleteListener(task -> {
+                if(task.isSuccessful()){
+                    goToMenu();
+                }else{
+                    //Show error message
+                    String errorCode = ((FirebaseAuthException) task.getException()).getErrorCode();
+                    showErrorToast(errorCode);
                 }
             });
         }
     }
 
+    /**
+     * Start menu activity
+     */
     private void goToMenu() {
         Intent i = new Intent(MainActivity.this, MenuActivity.class);
         startActivity(i);
     }
 
+    /**
+     * This method checks if the specified EditText is empty, and sets an error message if true.
+     * @param editText the EditText to be checked
+     * @param errorMsg the error message to be set if the EditText is empty
+     * @return true if the EditText is empty, false otherwise
+     */
     private boolean isEmpty(EditText editText, String errorMsg) {
         boolean empty = TextUtils.isEmpty(editText.getText());
         if (empty) {
@@ -190,7 +239,11 @@ public class MainActivity extends AppCompatActivity {
         return empty;
     }
 
-    private void dameToastdeerror(String error) {
+    /**
+     * This method displays a toast message that explains the Firebase error provided.
+     * @param error The error code returned by Firebase.
+     */
+    private void showErrorToast(String error) {
 
         switch (error) {
 
