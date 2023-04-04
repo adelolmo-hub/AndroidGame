@@ -29,6 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Objects;
 
+/**
+ * This class represents the main page activity of the application.
+ * It allows users to log in or to create an user.
+ */
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth firebaseAuth;
